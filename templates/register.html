@@ -1,0 +1,116 @@
+{% extends "template.html" %}
+{% block body %}
+    <form action="/register" method="post">
+        <div class="mb-3">
+            <label for="memberfirstname" class="form-label">Member First Name : </label>
+            <input type="text" class="form-control" id="memberfirstname" name = "m_first_name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="memberlastname" class="form-label">Member Last Name : </label>
+            <input type="text" class="form-control" id="memberlastname" name = "m_last_name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="headfirstname" class="form-label">Household Head First Name : </label>
+            <input type="text" class="form-control" id="headfirstname" name = "house_head_first_name">
+        </div>
+
+        <div class="mb-3">
+            <label for="headlastname" class="form-label">Household Head Last Name : </label>
+            <input type="text" class="form-control" id="headlastname" name = "house_head_last_name">
+        </div>
+
+        <div class="mb-3">
+            <label for="tempaddr" class="form-label">Temporary address :  </label>
+            <input type="text" class="form-control" id="tempaddr" name = "temporary_address">
+        </div>
+
+        <div class="mb-3">
+            <label for="permaddr" class="form-label">Permanent Address : </label>
+            <input type="text" class="form-control" id="permaddr" name = "permanent_address">
+        </div>
+
+        <div class="mb-3">
+            <label for="mobilenum" class="form-label">Mobile Number : </label>
+            <input type="number" class="form-control" id="mobilenum" name = "mobile_number" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="emergencycontactnum" class="form-label">Emergency Contact Number : </label>
+            <input type="number" class="form-control" id="emergencycontactnum" name = "emergency_contact_number" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="gender" class="form-label"> Gender : </label>
+            <select class="form-select" id="gender" name="gender">
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="O">Others</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="dob" class="form-label">Date Of Birth : </label>
+            <input type="date" class="form-control" id="dob" name = "dob" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="sportcategory" class="form-label">Sport Category : </label>
+            <input type="text" class="form-control" id="sportcategory" name = "sport_category" required>
+        </div>
+
+         <div class="mb-3">
+            <label for="maritalstatus" class="form-label"> Marital Status : </label>
+            <select class="form-select" id="maritalstatus" name="marital_status">
+                <option value="Unmarried">Unmarried</option>
+                <option value="Married">Married</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="occupation" class="form-label"> Occupation : </label>
+            <input type="text" class="form-control" id="occupation" name = "occupation">
+        </div>
+
+        <div class="mb-3">
+            <label for="weight" class="form-label">Weight (in Kgs) : </label>
+            <input type="text" class="form-control" id="weight" name = "weight">
+        </div>
+
+        
+        <div class="mb-3">
+             <label for="bloodgroup" class="form-label"> Blood Group : </label>
+            <select class="form-select" id="bloodgroup" name="blood_group" required>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+        </select>
+        </div>
+
+        <div class="mb-3">
+             <label for="membershiptype" class="form-label"> Membership Type : </label>
+            <select class="form-select" id="membershiptype" name="membership_type">
+                <option value="Monthly">Monthly Membership</option>
+                <option value="Quarterly">Quarterly Membership</option>
+                <option value="Half">Half Membership</option>
+                <option value="Yearly">Yearly Membership</option>
+                <option value="Couples">Couples Membership</option>
+                <option value="Trainer">Membership with Personal Trainer</option>
+                <option value="Others">Others</option>
+        </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="picture" class="form-label">Photo: </label>
+            <input type="file" name="picture" id="picture">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+{% endblock %}
