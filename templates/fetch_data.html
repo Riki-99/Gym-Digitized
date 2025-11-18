@@ -1,0 +1,64 @@
+{% extends "template.html" %}
+{% block body %}
+    <!-- {{details}} -->
+    <div class="container center">
+        <img src='static/uploads/{{details["photo"]}}' class="profile_photo"/>
+        <br>
+    </div>
+    <div class="center separate">
+        {{details["first_name"]}} {{details["last_name"]}}
+    </div>
+    <h1>Personal Data</h1>
+    <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                </tr>
+            </thead>
+            <tbody class="table-light">    
+                    <tr> 
+                        <td>Person ID</td>
+                        <td>{{details["person_id"]}}</td>
+                    </tr>
+                    <tr> 
+                        <td>First Name</td>
+                        <td>{{details["first_name"]}}</td>
+                    </tr>
+                    <tr> 
+                        <td>Last Name</td>
+                        <td>{{details["last_name"]}}</td>
+                    </tr>
+                    <tr> 
+                        <td>Gender</td>
+                        <td>{{details["gender"]}}</td>
+                    </tr>
+                    <tr> 
+                        <td>DOB</td>
+                        <td>{{details["dob"]}}</td>
+                    </tr>
+                     <tr> 
+                        <td>Mobile Number</td>
+                        <td>{{details["mobile_number"]}}</td>
+                    </tr>
+                     <tr> 
+                        <td>Emergency contact number</td>
+                        <td>{{details["emergency_number"]}}</td>
+                    </tr>
+                     <tr> 
+                        <td>Marital Status</td>
+                        <td>
+                            {% if details["married"] %}
+                                Married
+                            {% else %}
+                                Unmarried
+                            {% endif %}
+                    </tr>
+                     <tr> 
+                        <td>Blood Group</td>
+                        <td>{{details["blood_group"]}}</td>
+                    </tr>
+            </tbody>    
+    </table>
+
+{% endblock %}

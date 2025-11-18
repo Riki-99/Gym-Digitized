@@ -9,3 +9,35 @@ body{
 body{
     margin: 2% 3% 4% 1%;
 }
+
+tr[data-href]{
+    cursor: pointer;
+}
+
+
+.fetched_container{
+    font-size: 150%;
+    text-align: left;
+
+}
+.fetched{
+    /* display: inline; */
+    text-align: left;
+    font-weight: bolder;
+}
+
+.profile_photo
+{
+    height: 25%;
+    width: 25%;
+}
+.center{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.separate{
+    margin-top: 2%;
+    margin-bottom: 10%;
+}

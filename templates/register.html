@@ -1,6 +1,6 @@
 {% extends "template.html" %}
 {% block body %}
-    <form action="/register" method="post">
+    <form action="/register" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="memberfirstname" class="form-label">Member First Name : </label>
             <input type="text" class="form-control" id="memberfirstname" name = "m_first_name" required>
@@ -63,8 +63,8 @@
          <div class="mb-3">
             <label for="maritalstatus" class="form-label"> Marital Status : </label>
             <select class="form-select" id="maritalstatus" name="marital_status">
-                <option value="Unmarried">Unmarried</option>
-                <option value="Married">Married</option>
+                <option value=0>Unmarried</option>
+                <option value=1>Married</option>
             </select>
         </div>
 

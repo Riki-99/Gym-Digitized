@@ -2,22 +2,37 @@ CREATE TABLE persons(
     person_id INTEGER, /*primary key for  member*/
     first_name TEXT,
     last_name TEXT,
-    photo BLOB, /* passport size photo */
+    photo TEXT, /* passport size photo name, which will be stored in /static/uploads */
     gender VARCHAR(1),/* M or F or O (Male, Female, Other) */
     dob DATE,
+    temporary_address TEXT,
+    permanent_address TEXT,
+    mobile_number TEXT,
+    occupation TEXT,
+    emergency_number TEXT,
+    married INTEGER, /* 0 for unmarried 1 for married*/
+    blood_group TEXT,
     PRIMARY KEY (person_id) /* Automatically increments the id for new record in the table */
 );
 
 CREATE TABLE members(
     member_id INTEGER,
     admission_date DATE,
-    sport_category TEXT,
-    current_plan TEXT, /* Gym, Zumba etc*/
-    plan_start_date DATE,
-    plan_end_date DATE,
     household_head_first_name TEXT,
     household_head_last_name TEXT,
     FOREIGN KEY (member_id) REFERENCES persons(person_id)
+    PRIMARY KEY(member_id)
+);
+
+CREATE TABLE memberships(
+    membership_id INTEGER,
+    sport_category TEXT,
+    current_plan TEXT,
+    plan_start_date DATE,
+    plan_end_date DATE,
+    member_id INTEGER,
+    FOREIGN KEY (member_id) REFERENCES members(member_id)
+    PRIMARY KEY(membership_id)
 );
 
 CREATE TABLE staff(
@@ -26,6 +41,7 @@ CREATE TABLE staff(
     salary NUMBER,
     post TEXT,
     FOREIGN KEY (staff_id) REFERENCES persons(person_id)
+    PRIMARY KEY(staff_id)
 );
 
 CREATE TABLE transactions(
@@ -44,11 +60,11 @@ CREATE TABLE transactions(
 CREATE TABLE attendance(
     person_id INTEGER,
     todays_date DATE,
-    present NUMBER,
     timein_hours NUMBER, /* 24 hour format */
     timein_minutes NUMBER,
     timeout_hours NUMBER,
-    timeout_seconds NUMBER,
+    timeout_minutes NUMBER,
     PRIMARY KEY(person_id, todays_date)
-    FOREIGN KEY(person_id) REFERENCES persons(person_id)
+    FOREIGN KEY(person_id) REFERENCES members(member_id)
 );
+
