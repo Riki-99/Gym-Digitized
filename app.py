@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, session
-from cs50 import SQL
-from datetime import date, timedelta
+# from flask import Flask, render_template, request, session, jsonify
+# from cs50 import SQL
+# from datetime import date, timedelta
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
-db = SQL("sqlite:///data.db")
+# db = SQL("sqlite:///data.db")
+from helpers import *
 
 @app.route("/")
 def default():
@@ -22,16 +23,48 @@ def cashFlow():
 @app.route("/attendance", methods=("POST", "GET"))
 def attendance():
     if request.method=="GET":
-        return render_template("attendance.html", current_page="attendance")
+        return render_template("attendance.html", current_page="attendance", recordqueries=False)
     else:
-        return dealWithSearches("attendance.html")
+        records = returnRecordsUsingNames()
+        # Adding a new attribute to each record to know if a person is present that particular day
+        for record in records:
+            p_id = record["person_id"]
+            datetoday=date.today().strftime("%Y-%m-%d")
+            todaysrecord = db.execute("SELECT * FROM attendance WHERE person_id = ? AND todays_date = ?", p_id, datetoday)
+            record["todaysrecord"] = todaysrecord
+        return render_template("attendance.html", recordqueries=True, records=records)
+
+@app.route("/mark_present", methods=["POST"])
+def mark_present():
+    data = request.get_json()
+    member_id  = data["id"]
+    todays_date = date.today().strftime("%Y-%m-%d")
+    # Getting the hours for today's time
+    timein_hours = date.today().strftime("%H")
+    # Getting the minutes for today's time
+    timein_minutes = date.today().strftime("%M")
+    print(timein_hours, timein_minutes)
+    db.execute("INSERT INTO attendance(person_id, todays_date, timein_hours, timein_minutes) VALUES (?,?,?,?)", member_id, todays_date, timein_hours, timein_minutes)
+    # Reponse sent in json format so that js can understand
+    return jsonify({"id": member_id, "date": todays_date, "timein_hours": timein_hours, "timein_minutes": timein_minutes})
+
+# This is for unmarking any presenets that may have been accidentally marked
+@app.route("/mark_absent", methods=["POST"])
+def mark_absent():
+    data = request.get_json()
+    member_id  = data["id"]
+    todays_date = date.today().strftime("%Y-%m-%d")
+    db.execute("DELETE FROM attendance WHERE person_id = ? AND todays_date = ?", member_id, todays_date)
+    # Reponse sent in json format so that js can understand
+    return jsonify({"id": member_id, "date": todays_date})
 
 @app.route("/view_member_data", methods=("GET", "POST"))
 def view_memb_data():
     if request.method == "GET":
         return render_template("viewmemberdata.html", current_page="view_member_data", recordqueries=False)
     else:
-        return dealWithSearches("viewmemberdata.html")
+        records = returnRecordsUsingNames()
+        return render_template("viewmemberdata.html", current_page="view_member_data", recordqueries=True)
 @app.route("/data_analysis")
 def data_analysis():
     return render_template("dataanalysis.html", current_page="data_analysis")
@@ -113,19 +146,7 @@ def fetch_data():
     details = db.execute("SELECT * FROM persons WHERE person_id = ?", id_in_url)[0]
     return render_template("fetch_data.html", current_page="member_data", details=details)
 
-def current_date():
-    return date.today().strftime("%Y-%m-%d")
 
-def date_after_certain_days(todaysdate, dayCount):
-    return todaysdate + timedelta(days=dayCount)
-
-def dealWithSearches(redirecting_url):
-            # This needs to be modified in order to join tables by taking id from the persons table but for now we just join for simplicity purposes
-            f_name = request.form.get("m_first_name")
-            l_name = request.form.get("m_last_name")
-            records = list()
-            if l_name:
-                records = db.execute("SELECT * FROM persons WHERE perons.first_name LIKE ? and persons.last_name LIKE ?", f_name, l_name)
-            else:
-                records = db.execute("SELECT * FROM persons WHERE persons.first_name LIKE ?", f_name)
-                return render_template(redirecting_url, recordqueries=True, records=records)
+            
+if __name__ == "__main__":
+    app.run(debug=True)
