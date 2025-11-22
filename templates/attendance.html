@@ -12,11 +12,12 @@
 <table class="table table-striped">
             <thead class="table-dark">
                 <tr>
-                        <th>Member ID the fuck</th>
+                        <th>Member ID</th>
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Mobile Number</th>
                         <th>Permanent Address</th>
+                        <th>Modification Options</th>
                 </tr>
             </thead>
             <tbody class="table-light">
@@ -28,10 +29,11 @@
                         <td><a href="/fetch_data?member_id={{record['person_id']}}">{{record["mobile_number"]}}</a></td>
                         <td><a href="/fetch_data?member_id={{record['person_id']}}">{{record["permanent_address"]}}</a></td>
                         <td>{% if record["todaysrecord"] %}
-                            Todays record : record["todaysrecord"]
-                            Present stuff
                             <!-- Using data-id in order to store the id so it is convenient to access from js -->
-                            <button class="absentMarker" data-id="{{record['person_id']}}">Mark Absent</button>
+                            <button class="absentMarker" data-id="{{record['person_id']}}">Undo marking present</button>
+                            <!-- Disabling the button if already logged out -->
+                            <button class="timeoutMarker" data-id="{{record['person_id']}}" {%if record["todaysrecord"][0]["timeout_hours"]%}  disabled {% endif %}>Mark leaving time</button>
+                            
                         {% else %}
                             <button class="presentMarker" data-id="{{record['person_id']}}">Mark Present</button>                          
                         {% endif %}
@@ -59,6 +61,9 @@
                 // The response needs to be converted into JSON in order to be understood by js.
                 let response = await markingRequest.json()
                 console.log(response)
+
+                // Disabling click once already clicked
+                element.disabled = true;
             })
         });
 
@@ -76,6 +81,25 @@
                 })
                 let response = await data.json()
                 console.log(response)
+                element.disabled = true
+            })
+        })
+
+        timeoutMarkers = document.querySelectorAll(".timeoutMarker");
+        timeoutMarkers.forEach((element) => {
+            element.addEventListener("click", async () =>{
+                let data = await fetch("/mark_timeout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type" : "application/JSON"
+                    },
+                    body : JSON.stringify({
+                       id : element.dataset.id  
+                    })
+                })
+                let response = await data.json();
+                console.log(response)
+                element.disabled = true;
             })
         })
 

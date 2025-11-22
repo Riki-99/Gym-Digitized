@@ -1,10 +1,4 @@
-# from flask import Flask, render_template, request, session, jsonify
-# from cs50 import SQL
-# from datetime import date, timedelta
-
-# app = Flask(__name__)
-
-# db = SQL("sqlite:///data.db")
+# All headers are included in helpers
 from helpers import *
 
 @app.route("/")
@@ -18,7 +12,8 @@ def memberData():
 
 @app.route("/cash_flow")
 def cashFlow():
-    return render_template("cashflow.html", current_page="cash_flow")
+    transaction_categories = db.execute("SELECT * FROM transaction_type")
+    return render_template("cashflow.html", current_page="cash_flow", transaction_categories=transaction_categories)
 
 @app.route("/attendance", methods=("POST", "GET"))
 def attendance():
@@ -40,13 +35,18 @@ def mark_present():
     member_id  = data["id"]
     todays_date = date.today().strftime("%Y-%m-%d")
     # Getting the hours for today's time
-    timein_hours = date.today().strftime("%H")
+    timein_hours = datetime.now().hour
     # Getting the minutes for today's time
-    timein_minutes = date.today().strftime("%M")
+    timein_minutes = datetime.now().minute
     print(timein_hours, timein_minutes)
-    db.execute("INSERT INTO attendance(person_id, todays_date, timein_hours, timein_minutes) VALUES (?,?,?,?)", member_id, todays_date, timein_hours, timein_minutes)
+    # Preventing double addition to the table
+
+    if not db.execute("SELECT * FROM attendance WHERE person_id = ? AND todays_date = ?", member_id, todays_date):
+        db.execute("INSERT INTO attendance(person_id, todays_date, timein_hours, timein_minutes) VALUES (?,?,?,?)", member_id, todays_date, timein_hours, timein_minutes)
+        return jsonify({"id": member_id, "date": todays_date, "timein_hours": timein_hours, "timein_minutes": timein_minutes})
+    else:
+        return jsonify({"message" : "Error already logged in for the day"})
     # Reponse sent in json format so that js can understand
-    return jsonify({"id": member_id, "date": todays_date, "timein_hours": timein_hours, "timein_minutes": timein_minutes})
 
 # This is for unmarking any presenets that may have been accidentally marked
 @app.route("/mark_absent", methods=["POST"])
@@ -57,6 +57,17 @@ def mark_absent():
     db.execute("DELETE FROM attendance WHERE person_id = ? AND todays_date = ?", member_id, todays_date)
     # Reponse sent in json format so that js can understand
     return jsonify({"id": member_id, "date": todays_date})
+
+@app.route("/mark_timeout", methods=["POST"])
+def mark_timeout():
+    data = request.get_json()
+    member_id = data["id"]
+    todays_date = date.today().strftime("%Y-%m-%d")
+    timeout_hours = datetime.now().hour
+    timeout_minutes = datetime.now().minute
+    db.execute("UPDATE attendance SET timeout_hours = ? , timeout_minutes = ? WHERE  person_id = ? AND todays_date = ?", timeout_hours, timeout_minutes, member_id, todays_date)
+    query = db.execute("SELECT * FROM attendance WHERE person_id = ? AND todays_date = ?", member_id, todays_date)
+    return jsonify({"member_id" : member_id, "timeout_hours" : timeout_hours, "timeout_minutes" : timeout_minutes, "query" : query})
 
 @app.route("/view_member_data", methods=("GET", "POST"))
 def view_memb_data():

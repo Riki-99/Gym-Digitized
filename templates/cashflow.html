@@ -1,4 +1,83 @@
 {% extends "template.html" %}
 {% block body %}
-    Cashflow stuff goes in here
+        <form action="/" method="post">
+        <div class="mb-3">
+            <h2>Transactions </h2>
+        </div>
+        <div class="mb-3">
+            <label for="cashFlowDirection" class="form-label"> Transaction Direction: </label>
+            <select id="cashFlowDirection" name = "cash_flow_direction">
+                <option value="1">Income</option>
+                <option value="0">Expense</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="amount" class="form-label">Transaction Amount (Rs): </label>
+            <input type="number" class="form-control" id="amount" name = "transaction_amount">
+        </div>
+
+        <div class="mb-3">
+            <label for="transactionCategory" class="form-label"> Transaction Category: </label>
+            <select id="transactionCategory" name = "transaction_category">
+                {% for trans_cat in transaction_categories %}
+                    <option value='{{trans_cat["id"]}}' class='category{{trans_cat["direction"]}}'>{{trans_cat["name"]}}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <label for="newTransactionCategory" class="form-label">New Transaction Category: </label>
+            <input type="text" class="form-control" id="newTransactionCategory" name = "new_transaction_category" placeholder="Add a new transaction category...">
+            <button id="newTransactionCategoryAdder" type="button">Add</button>
+        </div>
+
+        <button type="submit" class="btn btn-primary mb-3 d-flex align-items-center gap-5">Search <span class="material-symbols-outlined">search</span></button>
+    </form> 
+
+    <script>
+        document.querySelector("#cashFlowDirection").addEventListener("change", transactionCategorySelector);
+        // Flag for selecting the first option by default to prevent previous invalid opetion from remaining selected
+        function transactionCategorySelector(){
+            firsttime = true;
+            direction = document.querySelector("#cashFlowDirection").value;
+            console.log("Direction: ", direction)
+            incomeCategories = document.querySelectorAll(".category1");
+            expenseCategories = document.querySelectorAll(".category0");
+            if(direction == 1)
+            {
+                console.log(1)
+                // This means that direction = 1 and we're looking for income categories
+                expenseCategories.forEach(element => {
+                    element.style.display = "none";
+                    element.removeAttribute("selected");
+                });
+
+                incomeCategories.forEach((element) => {
+                    element.style.display = "block";
+                    if(firsttime)
+                    {
+                        element.setAttribute("selected", "true");
+                        firsttime = false;
+                    }
+                });
+            }
+            else{
+                console.log(0)
+                incomeCategories.forEach(element => {
+                    element.style.display = "none";
+                    element.removeAttribute("selected");
+                });
+
+                expenseCategories.forEach((element) => {
+                    element.style.display = "block";
+                    if(firsttime)
+                    {
+                        element.setAttribute("selected", "true");
+                        firsttime = false;
+                    }
+                });
+            }
+        }
+        // Call the function once for initial configuration
+        transactionCategorySelector();
+    </script>
 {% endblock %}

@@ -44,17 +44,31 @@ CREATE TABLE staff(
     PRIMARY KEY(staff_id)
 );
 
+CREATE TABLE transaction_type(
+    id INTEGER,
+    name TEXT,
+    direction INT, /* 1 Income/ 0 Expenditure */
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE transaction_second_party(
+    id INT,
+    type TEXT, /*Other party type : member, staff, external*/
+    PRIMARY KEY (id)
+    );
+
 CREATE TABLE transactions(
     transaction_id INT,
-    purpose TEXT,
     amount NUMBER,
     transaction_date DATE,
     remarks TEXT, /* For externals, the name should be written in remarks*/
-    transaction_type TEXT, /* Income/Expenditure */
-    other_party_type TEXT, /* Other party maybe a MEMBER, STAFF, EXTERNAL */
+    transaction_type_id INT, 
+    second_party_id INT, /* Other party maybe a MEMBER, STAFF, EXTERNAL */
     person_id INT, /* If id is applicable, members only for now but hopefully staff too somewhat later*/
     PRIMARY KEY (transaction_id),
-    FOREIGN KEY (person_id) REFERENCES persons(person_id)
+    FOREIGN KEY (person_id) REFERENCES persons(person_id),
+    FOREIGN KEY (second_party_id) REFERENCES transaction_second_party(id),
+    FOREIGN KEY (transaction_type_id) REFERENCES transaction_type(id)
 );
 
 CREATE TABLE attendance(
