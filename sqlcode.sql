@@ -58,9 +58,9 @@ CREATE TABLE transaction_second_party(
     );
 
 CREATE TABLE transactions(
-    transaction_id INT,
+    transaction_id INTEGER,
     amount NUMBER,
-    transaction_date DATE,
+    transaction_datetime TEXT,
     remarks TEXT, /* For externals, the name should be written in remarks*/
     transaction_type_id INT, 
     second_party_id INT, /* Other party maybe a MEMBER, STAFF, EXTERNAL */

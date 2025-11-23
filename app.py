@@ -158,6 +158,13 @@ def fetch_data():
     return render_template("fetch_data.html", current_page="member_data", details=details)
 
 
+@app.route("/new_transaction_category", methods=["POST"])
+def new_transaction_category():
+    data = request.get_json()
+    name = data['name']
+    direction = data['direction']
+    db.execute("INSERT INTO transaction_type(name, direction) VALUES (?, ?)", name, direction)
+    return jsonify({"Name" : name, "Direction" : direction})
             
 if __name__ == "__main__":
     app.run(debug=True)

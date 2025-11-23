@@ -24,16 +24,41 @@
                     <option value='{{trans_cat["id"]}}' class='category{{trans_cat["direction"]}}'>{{trans_cat["name"]}}</option>
                 {% endfor %}
             </select>
-            <br><br>
+            <button type="button" id="transactionCategoryKey">Add a new transaction category</button>
+        </div>
+        <div class="mb-3" id="newTransactionCategoryDiv" style="display:none;">
             <label for="newTransactionCategory" class="form-label">New Transaction Category: </label>
             <input type="text" class="form-control" id="newTransactionCategory" name = "new_transaction_category" placeholder="Add a new transaction category...">
+
+            <div class="mb-3">
+            <label for="newCashFlowDirection" class="form-label"> Cashflow Direction: </label>
+                <select id="newCashFlowDirection" name = "new_cash_flow_direction">
+                    <option value="1">Income</option>
+                    <option value="0">Expense</option>
+                </select>
+            </div>
+
             <button id="newTransactionCategoryAdder" type="button">Add</button>
         </div>
 
+        <div class="mb-3">
+            <label for="secondParty" class="form-label"> Transaction Other Party: </label>
+            <select id="secondParty" name = "second_Party">
+                <option value="0">Member</option>
+                <option value="1">Staff</option>
+                <option value="2">External</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="remarks" class="form-label">Remarks: </label>
+            <textarea class="form-control" id="remarks" name = "transaction_remarks" placeholder="Remarks"></textarea>
+        </div>
         <button type="submit" class="btn btn-primary mb-3 d-flex align-items-center gap-5">Search <span class="material-symbols-outlined">search</span></button>
     </form> 
 
     <script>
+        let newTransactionCategoryExpanded = false;
         document.querySelector("#cashFlowDirection").addEventListener("change", transactionCategorySelector);
         // Flag for selecting the first option by default to prevent previous invalid opetion from remaining selected
         function transactionCategorySelector(){
@@ -79,5 +104,40 @@
         }
         // Call the function once for initial configuration
         transactionCategorySelector();
+
+        // For expanding and collpasing the "Add new transaction category"
+        let keyButton = document.querySelector("#transactionCategoryKey");
+        keyButton.addEventListener("click", () =>{
+            relevantDiv = document.querySelector("#newTransactionCategoryDiv");
+            if(newTransactionCategoryExpanded)
+            {
+                relevantDiv.style.display = "none";
+                keyButton.innerText = "Add a new transaction category"
+                newTransactionCategoryExpanded = false;
+            }
+            else{
+                relevantDiv.style.display = "block";
+                keyButton.innerText = "Collapse"
+                newTransactionCategoryExpanded = true;
+            }
+        })
+
+        // For actually adding the new transaction category to the database
+        document.querySelector("#newTransactionCategoryAdder").addEventListener("click", async ()=>{
+            Cname = document.querySelector("#newTransactionCategory").value.trim();
+            if(name.value == "")
+            {
+                alert("ERROR : Please name the new transaction category");
+                return;
+            }
+            Cdirection = parseInt(document.querySelector('#newCashFlowDirection').value);
+            let data = await fetch("/new_transaction_category", {
+                "method" : "POST",
+                "headers" : {"Content-Type" : "application/JSON"},
+                "body": JSON.stringify({name : Cname, direction : Cdirection})
+            })
+            let response = await data.json()
+            console.log(response)
+        })
     </script>
 {% endblock %}
