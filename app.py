@@ -75,7 +75,7 @@ def view_memb_data():
         return render_template("viewmemberdata.html", current_page="view_member_data", recordqueries=False)
     else:
         records = returnRecordsUsingNames()
-        return render_template("viewmemberdata.html", current_page="view_member_data", recordqueries=True)
+        return render_template("viewmemberdata.html", current_page="view_member_data", recordqueries=True, records=records)
 @app.route("/data_analysis")
 def data_analysis():
     return render_template("dataanalysis.html", current_page="data_analysis")
@@ -165,6 +165,46 @@ def new_transaction_category():
     direction = data['direction']
     db.execute("INSERT INTO transaction_type(name, direction) VALUES (?, ?)", name, direction)
     return jsonify({"Name" : name, "Direction" : direction})
-            
+
+@app.route("/transaction_review", methods=["POST"])
+def transaction_details():
+    direction = request.form.get("cash_flow_direction")
+    amount = request.form.get("transaction_amount")
+    category = request.form.get("transaction_category")
+    category_description = db.execute("SELECT name FROM transaction_type WHERE id = ?", category)[0]
+    second_party = request.form.get("second_party")
+    person_id = request.form.get("person_id")
+    if(not person_id):
+        person_id = "Irrelevant"
+    remarks = request.form.get("transaction_remarks")
+    return render_template("transactionreview.html", direction=direction, amount=amount, category=category, second_party=second_party, person_id=person_id, remarks=remarks, current_page="cash_flow", category_description=category_description["name"]) 
+
+@app.route("/confirm_transaction", methods=["POST"])
+def confirm_transaction():
+    data = request.get_json()
+    # Direction for each category can be referred to using the transaction_type table in data.db
+    direction = data["direction"]
+    amount = data["amount"]
+    category = data["category"]
+    second_party = data["second_party"]
+    person_id = data["person_id"]
+    remarks = data["remarks"]
+    # To check person validity
+    personvalidity = True
+    # For invalid person id
+    status=f"Error: Person with id : {person_id} doesn't exist."
+    success = False
+    # If there is a person id, then we need to check whether the person actually exists
+    if person_id:
+        personvalidity = db.execute("SELECT * FROM persons WHERE person_id = ?", person_id)
+    
+    if personvalidity:
+        status = "Transaction Completed!"
+        success = True
+        
+    if(personvalidity):
+        db.execute("INSERT INTO transactions(amount, transaction_datetime, remarks, transaction_type_id, second_party_id, person_id) VALUES(?,datetime('now','localtime'),?,?,?,?);", amount, remarks, category, second_party, person_id)
+    return jsonify({"amount" : amount, "remarks" : remarks, "category" : category, "second_party" : second_party, "person_id" : person_id, "success" : success,  "statusText" : status})
+
 if __name__ == "__main__":
     app.run(debug=True)

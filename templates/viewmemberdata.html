@@ -21,7 +21,6 @@
                 </tr>
             </thead>
             <tbody class="table-light">
-                <h3>{{records}}</h3>
                 {% for record in records %}        
                         <td><a href="/fetch_data?member_id={{record['person_id']}}">{{record["person_id"]}}</a></td>
                         <td><a href="/fetch_data?member_id={{record['person_id']}}">{{record["first_name"]}}</a></td>

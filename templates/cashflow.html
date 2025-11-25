@@ -1,20 +1,20 @@
 {% extends "template.html" %}
 {% block body %}
-        <form action="/" method="post">
+        <form action="/transaction_review" method="post">
         <div class="mb-3">
             <h2>Transactions </h2>
         </div>
         <div class="mb-3">
             <label for="cashFlowDirection" class="form-label"> Transaction Direction: </label>
             <select id="cashFlowDirection" name = "cash_flow_direction">
-                <option value="1">Income</option>
-                <option value="0">Expense</option>
+                <option value=1>Income</option>
+                <option value=0>Expense</option>
             </select>
         </div>
 
         <div class="mb-3">
             <label for="amount" class="form-label">Transaction Amount (Rs): </label>
-            <input type="number" class="form-control" id="amount" name = "transaction_amount">
+            <input type="number" class="form-control" id="amount" name = "transaction_amount" required>
         </div>
 
         <div class="mb-3">
@@ -33,8 +33,8 @@
             <div class="mb-3">
             <label for="newCashFlowDirection" class="form-label"> Cashflow Direction: </label>
                 <select id="newCashFlowDirection" name = "new_cash_flow_direction">
-                    <option value="1">Income</option>
-                    <option value="0">Expense</option>
+                    <option value=1>Income</option>
+                    <option value=0>Expense</option>
                 </select>
             </div>
 
@@ -43,18 +43,23 @@
 
         <div class="mb-3">
             <label for="secondParty" class="form-label"> Transaction Other Party: </label>
-            <select id="secondParty" name = "second_Party">
-                <option value="0">Member</option>
-                <option value="1">Staff</option>
-                <option value="2">External</option>
+            <select id="secondParty" name = "second_party">
+                <option value=0>Member</option>
+                <option value=1>Staff</option>
+                <option value=2>External</option>
             </select>
+        </div>
+
+        <div class="mb-3" id="personIdDiv">
+            <label for="person_id" class="form-label">Other Person ID: </label>
+            <input type="number" class="form-control" id="personId" name = "person_id">
         </div>
 
         <div class="mb-3">
             <label for="remarks" class="form-label">Remarks: </label>
-            <textarea class="form-control" id="remarks" name = "transaction_remarks" placeholder="Remarks"></textarea>
+            <textarea class="form-control" id="remarks" name = "transaction_remarks" placeholder="Remarks" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary mb-3 d-flex align-items-center gap-5">Search <span class="material-symbols-outlined">search</span></button>
+        <button type="submit" class="btn btn-primary mb-3 d-flex align-items-center gap-5">CONFIRM</button>
     </form> 
 
     <script>
@@ -112,6 +117,7 @@
             if(newTransactionCategoryExpanded)
             {
                 relevantDiv.style.display = "none";
+                document.querySelector("#personId").value = ""
                 keyButton.innerText = "Add a new transaction category"
                 newTransactionCategoryExpanded = false;
             }
@@ -138,6 +144,20 @@
             })
             let response = await data.json()
             console.log(response)
+        })
+
+        // For stuff regarding the other party
+        otherParty = document.querySelector("#secondParty");
+        otherParty.addEventListener("change", () =>{
+            // If not external, we need a new field to manually enter the person id
+            personIdDiv = document.querySelector("#personIdDiv");
+            if(otherParty.value != 2)
+            {
+                personIdDiv.style.display = "block";
+            }
+            else{
+                 personIdDiv.style.display = "none";
+            }
         })
     </script>
 {% endblock %}

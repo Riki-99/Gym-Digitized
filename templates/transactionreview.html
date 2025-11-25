@@ -1,0 +1,86 @@
+{% extends "template.html" %}
+<h1>Transaction Review</h1>
+{% block body %}
+<div id="transactionDiv">
+    <h1>Transaction Details Review</h1>
+<table class="table table-striped">
+            <tbody class="table-light">
+                <tr>
+                    <th data-val="{{direction}}">Transaction Direction</th>
+                    <td>{% if direction == 0 %} Expenditure {% else %} Income {% endif %}</td>
+                </tr>
+
+                <tr>
+                    <th data-val="{{amount}}">Amount</th>
+                    <td>{{amount}}</td>
+                </tr>
+
+                <tr>
+                    <th data-val="{{direction}}">Transaction Category</th>
+                    <td>{{category_description}}</td>
+                </tr>
+
+                <tr>
+                    <th data-val="{{direction}}">Transaction Other Party</th>
+                    <td>{% if second_party == 0 %} Member {% elif second_party == 1 %} Staff {% else %} External {% endif %}</td>
+                </tr>
+
+                <tr>
+                    <th data-val="{{person_id}}">Person Id</th>
+                    <td>{{person_id}}</td>
+                </tr>
+
+                <tr>
+                    <th data-val="{{direction}}">Remarks</th>
+                    <td>{{remarks}}</td>
+                </tr>
+            </tbody>    
+    </table>
+    <table style="width: 100%">
+        <tr>
+            <td><button type="button" class="btn btn-primary mb-3 d-flex align-items-center gap-5" id="confirm" style="background-color: #1f3; border-color: #1f3">CONFIRM</button></td>
+            <td><button type="button" class="btn btn-primary mb-3 d-flex align-items-center gap-5" id="cancel" style="background-color:#f22; border-color: #f22">CANCEL</button></td>
+        </tr>
+    </table>
+</div>
+
+    <div id="feedbackDiv" style="display:none;">
+        <h1>Transaction feedback!</h1>
+    </div>
+
+<script>
+     div = document.querySelector("#feedbackDiv");
+     h1 = div.querySelector("h1");
+    document.querySelector("#confirm").addEventListener("click", async () =>{
+        // Sending request to the backend in order to save the transaction details
+        paragraphs = document.querySelectorAll("th[data-val]")
+        data = await fetch("/confirm_transaction", {
+            "method" : "POST",
+            "headers" : {
+                "Content-Type" : "application/json"
+            },
+            "body" : JSON.stringify(
+                {
+                    direction: paragraphs[0].dataset.val, 
+                    amount:parseInt(paragraphs[1].dataset.val), 
+                    category:parseInt(paragraphs[2].dataset.val),
+                    second_party:parseInt(paragraphs[3].dataset.val),
+                    person_id: parseInt(paragraphs[4].dataset.val),
+                    remarks: paragraphs[5].dataset.val
+                })
+        });
+        response = await data.json();
+        msg = response.statusText;
+        
+        h1.innerText = msg;
+        div.style.display = "block";
+        document.querySelector("#transactionDiv").style.display="none";
+    })
+
+    document.querySelector("#cancel").addEventListener("click", () =>{
+        h1.innerText = "Transaction Cancelled!"
+        div.style.display = "block";
+        document.querySelector("#transactionDiv").style.display="none";
+    })
+</script>
+{% endblock %}
