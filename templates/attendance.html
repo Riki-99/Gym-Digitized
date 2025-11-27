@@ -29,12 +29,12 @@
                         <td><a href="/fetch_data?member_id={{record['person_id']}}">{{record["permanent_address"]}}</a></td>
                         <td>{% if record["todaysrecord"] %}
                             <!-- Using data-id in order to store the id so it is convenient to access from js -->
-                            <button class="absentMarker" data-id="{{record['person_id']}}">Undo marking present</button>
+                            <button class="absentMarker black-button btn btn-primary mb-3 d-flex align-items-center gap-3" data-id="{{record['person_id']}}">Undo marking present</button>
                             <!-- Disabling the button if already logged out -->
-                            <button class="timeoutMarker" data-id="{{record['person_id']}}" {%if record["todaysrecord"][0]["timeout_hours"]%}  disabled {% endif %}>Mark leaving time</button>
+                            <button class="timeoutMarker black-button btn btn-primary mb-3 d-flex align-items-center gap-3" data-id="{{record['person_id']}}" {%if record["todaysrecord"][0]["timeout_hours"]%}  disabled {% endif %}>Mark leaving time</button>
                             
                         {% else %}
-                            <button class="presentMarker" data-id="{{record['person_id']}}">Mark Present</button>                          
+                            <button class="presentMarker black-button btn btn-primary mb-3 d-flex align-items-center gap-3" data-id="{{record['person_id']}}">Mark Present</button>                          
                         {% endif %}
                         </td>
                     </tr>
@@ -103,6 +103,10 @@
         })
 
     </script>
+{% endblock %}
+
+{% block footer %}
+    <button><a href="/attendance_details" style="text-decoration: none;">View Attendance in Detail</a></button>
 {% endblock %}
 
 

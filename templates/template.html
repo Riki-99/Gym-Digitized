@@ -24,13 +24,18 @@
       <a class="dropdown-item" href="/data_analysis">Data Analysis</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link {% if current_page == 'cash_flow' %} active {% endif %}" href="/cash_flow">Cash Flow</a>
+    <a class="nav-link {% if current_page == 'transactions' %} active {% endif %}" href="/transactions">Transactions</a>
   </li>
   <li class="nav-item">
     <a class="nav-link  {% if current_page == 'attendance' %} active {% endif %}" href="/attendance">Attendence</a>
   </li>
 </ul>
+<!-- Heading to make it possible to add some text at the top of the document, mainly to confirm something -->
+<p id="heading" style="margin: 3%; margin-left: 0; background-color:#1f6; color: #fff;border: solid 1px #1f6; padding: 1%; border-radius: 3px; font-size: 120%;">{{heading | safe}}</p>
 {% block body %}
+{% endblock %}
+
+{% block footer %}
 {% endblock %}
 </body>
 </html>

@@ -1,0 +1,58 @@
+{% extends "template.html" %}
+{% block body %}
+<div class="mb-3">
+    <label for="startDate">Start Clipping From: </label>
+    <input type="date" name="start_date" id="startDate" class="form-select" value="{{date15daysago}}"/>
+</div>
+
+<div class="mb-3">
+    <label for="startDate">Stop Clipping At: </label>
+    <input type="date" name="end_date" id="endDate" class="form-select" value="{{datetoday}}"/>
+</div>
+
+<div class="mb-3">
+    <button id="attendanceLoader">Load Attendance</button>
+</div>
+    <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                        <th>Member ID</th>
+                        <th>Member Name</th>
+                </tr>
+            </thead>
+            <tbody class="table-light">     
+                        <td>1 </td>
+                        <td>The Man</td>
+            </tbody>    
+    </table>
+
+
+    <script>
+        async function loadAttendance(){
+            startdate = document.querySelector("#startDate").value;
+            enddate = document.querySelector("#endDate").value;
+
+            request = await fetch("/get_attendance_details", {
+                method : "POST",
+                headers : {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    start_date : startdate,
+                    end_date : enddate
+                })
+            })
+
+            response = await request.json();
+            
+            active_members = response.active_members;
+            days_array = response.days_array;
+            time_diff = response.time_diff;
+
+
+            console.log(response);
+        }
+
+        loadAttendance();
+    </script>
+{% endblock %}

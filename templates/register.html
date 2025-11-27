@@ -1,6 +1,16 @@
 {% extends "template.html" %}
 {% block body %}
-    <form action="/register" method="post" enctype="multipart/form-data">
+<h2>Registration</h2><br>
+<form action="/register" method="post" enctype="multipart/form-data">
+
+        <div class="mb-3">
+                <label for="relSel">Select Registering For: </label>
+                <select  id="regSel" class="form-select" name="persons_class">
+                <option value="0">Member</option>
+                <option value="1">Staff</option>
+            </select>
+        </div>
+
         <div class="mb-3">
             <label for="memberfirstname" class="form-label">Member First Name : </label>
             <input type="text" class="form-control" id="memberfirstname" name = "m_first_name" required>
@@ -11,15 +21,19 @@
             <input type="text" class="form-control" id="memberlastname" name = "m_last_name" required>
         </div>
 
-        <div class="mb-3">
-            <label for="headfirstname" class="form-label">Household Head First Name : </label>
-            <input type="text" class="form-control" id="headfirstname" name = "house_head_first_name">
-        </div>
 
-        <div class="mb-3">
-            <label for="headlastname" class="form-label">Household Head Last Name : </label>
-            <input type="text" class="form-control" id="headlastname" name = "house_head_last_name">
+        <div id="staffSpecific">
+            <div class="mb-3">
+                <label for="jobDesc" class="form-label">Job Post : </label>
+                <input type="text" class="form-control" id="jobDesc" name = "job_desc">
+            </div>
+
+             <div class="mb-3">
+                <label for="salary" class="form-label">Salary : </label>
+                <input type="text" class="form-control" id="salary" name = "salary">
+            </div>
         </div>
+        
 
         <div class="mb-3">
             <label for="tempaddr" class="form-label">Temporary address :  </label>
@@ -55,55 +69,68 @@
             <input type="date" class="form-control" id="dob" name = "dob" required>
         </div>
 
-        <div class="mb-3">
-            <label for="sportcategory" class="form-label">Sport Category : </label>
-            <input type="text" class="form-control" id="sportcategory" name = "sport_category" required>
-        </div>
+        <div id="memberSpecific">
+            <div class="mb-3">
+                <label for="headfirstname" class="form-label">Household Head First Name : </label>
+                <input type="text" class="form-control" id="headfirstname" name = "house_head_first_name">
+            </div>
 
-         <div class="mb-3">
-            <label for="maritalstatus" class="form-label"> Marital Status : </label>
-            <select class="form-select" id="maritalstatus" name="marital_status">
-                <option value=0>Unmarried</option>
-                <option value=1>Married</option>
+            <div class="mb-3">
+                <label for="headlastname" class="form-label">Household Head Last Name : </label>
+                <input type="text" class="form-control" id="headlastname" name = "house_head_last_name">
+            </div>
+
+            <div class="mb-3">
+                <label for="sportcategory" class="form-label">Sport Category : </label>
+                <input type="text" class="form-control" id="sportcategory" name = "sport_category" required>
+             </div>   
+
+            <div class="mb-3">
+                <label for="occupation" class="form-label"> Occupation : </label>
+                <input type="text" class="form-control" id="occupation" name = "occupation">
+            </div>
+
+            <div class="mb-3">
+                <label for="weight" class="form-label">Weight (in Kgs) : </label>
+                <input type="text" class="form-control" id="weight" name = "weight">
+            </div>
+
+            <div class="mb-3">
+                <label for="membershiptype" class="form-label"> Membership Type : </label>
+                <select class="form-select" id="membershiptype" name="membership_type">
+                    <option value="Monthly">Monthly Membership</option>
+                    <option value="Quarterly">Quarterly Membership</option>
+                    <option value="Half">Half Membership</option>
+                    <option value="Yearly">Yearly Membership</option>
+                    <option value="Couples">Couples Membership</option>
+                    <option value="Trainer">Membership with Personal Trainer</option>
+                    <option value="Others">Others</option>
             </select>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="occupation" class="form-label"> Occupation : </label>
-            <input type="text" class="form-control" id="occupation" name = "occupation">
-        </div>
 
-        <div class="mb-3">
-            <label for="weight" class="form-label">Weight (in Kgs) : </label>
-            <input type="text" class="form-control" id="weight" name = "weight">
-        </div>
 
-        
-        <div class="mb-3">
-             <label for="bloodgroup" class="form-label"> Blood Group : </label>
-            <select class="form-select" id="bloodgroup" name="blood_group" required>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-        </select>
-        </div>
+            <div class="mb-3">
+                <label for="maritalstatus" class="form-label"> Marital Status : </label>
+                <select class="form-select" id="maritalstatus" name="marital_status">
+                    <option value=0>Unmarried</option>
+                    <option value=1>Married</option>
+                </select>
+            </div>
 
-        <div class="mb-3">
-             <label for="membershiptype" class="form-label"> Membership Type : </label>
-            <select class="form-select" id="membershiptype" name="membership_type">
-                <option value="Monthly">Monthly Membership</option>
-                <option value="Quarterly">Quarterly Membership</option>
-                <option value="Half">Half Membership</option>
-                <option value="Yearly">Yearly Membership</option>
-                <option value="Couples">Couples Membership</option>
-                <option value="Trainer">Membership with Personal Trainer</option>
-                <option value="Others">Others</option>
-        </select>
+            <div class="mb-3">
+                <label for="bloodgroup" class="form-label"> Blood Group : </label>
+                <select class="form-select" id="bloodgroup" name="blood_group" required>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
         </div>
 
         <div class="mb-3">
@@ -113,4 +140,34 @@
         
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+
+    <script>
+        document.querySelector("#regSel").addEventListener("change", () =>{
+            change();
+        })
+
+        function change(){
+            staff = document.querySelector("#staffSpecific");
+            member = document.querySelector("#memberSpecific");
+            sc =  document.querySelector("#sportcategory")
+            mt = document.querySelector("#membershiptype")
+
+            val = document.querySelector("#regSel").value;
+            if(val == 0)
+            {
+                staff.style.display = "none";
+                member.style.display = "block";
+                sc.setAttribute("required","true");
+                mt.setAttribute("required","true");
+            }
+
+            else{
+                member.style.display = "none";
+                staff.style.display = "block";  
+                sc.removeAttribute("required");
+                mt.removeAttribute("required");
+            }
+        }
+        change();
+    </script>
 {% endblock %}

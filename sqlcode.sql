@@ -38,6 +38,7 @@ CREATE TABLE memberships(
 CREATE TABLE staff(
     staff_id INTEGER,
     joined_date DATE,
+    left_date DATE,
     salary NUMBER,
     post TEXT,
     FOREIGN KEY (staff_id) REFERENCES persons(person_id)

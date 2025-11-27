@@ -10,7 +10,7 @@ def current_date():
     return date.today().strftime("%Y-%m-%d")
 
 def date_after_certain_days(todaysdate, dayCount):
-    return todaysdate + timedelta(days=dayCount)
+    return (todaysdate + timedelta(days=dayCount))
 
 def returnRecordsUsingNames(f_name=None, l_name=None):
             # This needs to be modified in order to join tables by taking id from the persons table but for now we just join for simplicity purposes

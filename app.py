@@ -10,10 +10,10 @@ def memberData():
     if request.method == "GET":
         return render_template("memberdata.html", current_page="member_data")
 
-@app.route("/cash_flow")
+@app.route("/transactions")
 def cashFlow():
     transaction_categories = db.execute("SELECT * FROM transaction_type")
-    return render_template("cashflow.html", current_page="cash_flow", transaction_categories=transaction_categories)
+    return render_template("transactions.html", current_page="transactions", transaction_categories=transaction_categories)
 
 @app.route("/attendance", methods=("POST", "GET"))
 def attendance():
@@ -28,6 +28,29 @@ def attendance():
             todaysrecord = db.execute("SELECT * FROM attendance WHERE person_id = ? AND todays_date = ?", p_id, datetoday)
             record["todaysrecord"] = todaysrecord
         return render_template("attendance.html", recordqueries=True, records=records)
+    
+# For the attendance details interface
+@app.route("/attendance_details")
+def attendance_details():
+    datetoday = date.today().strftime("%Y-%m-%d")
+    date15daysago = (date.today() - timedelta(days=15)).strftime("%Y-%m-%d")
+    return render_template("attendancedetails.html", datetoday=datetoday, date15daysago=date15daysago)
+
+# Interface for doing json request reponse stuff
+@app.route("/get_attendance_details", methods=["POST"])
+def get_attendance_details():
+    data = request.get_json()
+    print("Hello")
+    print(data["start_date"], data["end_date"])
+    start = data["start_date"]
+    end = data["end_date"]
+    time_diff = (date.fromisoformat(end) - date.fromisoformat(start)).days
+    days_array = []
+    for i in range(0, time_diff):
+        days_array.append(date_after_certain_days(date.fromisoformat(start), i).strftime("%m-%d"))
+    active_members = db.execute("SELECT memberships.member_id, persons.first_name, persons.last_name FROM memberships FULL JOIN persons ON memberships.member_id = persons.person_id WHERE (memberships.plan_start_date <= ? AND memberships.plan_end_date >= ?) OR (memberships.plan_start_date <= ? AND memberships.plan_end_date >= ?)", end, end, start, start)
+    return jsonify({"active_members": active_members, "time_diff": time_diff, "days_array": days_array})
+
 
 @app.route("/mark_present", methods=["POST"])
 def mark_present():
@@ -87,6 +110,8 @@ def register():
     
     else:
         #Adding the data in here
+        #Checking whether we're to be registering a member (0) or a staff (1)
+        persons_class = request.form.get("persons_class")
         #First name
         f_name = request.form.get("m_first_name")
         #Last name
@@ -120,8 +145,12 @@ def register():
         #Picture
         pict = request.files["picture"]
 
+        post = request.form.get("job_desc")
+
+        salary = request.form.get('salary')
+        print(pict.filename)
         # Saving the picture locally
-        pict.save(f"static/uploads/{pict.filename}")
+        pict.save(f"./static/uploads/{pict.filename}")
 
         #Preliminary check to avoid inspect tampering is required
 
@@ -144,12 +173,20 @@ def register():
         person_ids = db.execute("SELECT person_id FROM persons WHERE first_name LIKE ? AND last_name LIKE ? AND dob LIKE ? AND mobile_number = ? LIMIT 1", f_name, l_name, dob, m_num)
         # Returns a list of dictionaries which needs to be indexed properly
         person_id = person_ids[0]['person_id']
-        # Inserting data into the members table for registration
-        db.execute("INSERT INTO members(member_id, admission_date, household_head_first_name, household_head_last_name) VALUES (?, ?, ?, ?)", person_id, today, hh_f_name, hh_l_name)
-        # Inserting data into memberships
-        db.execute("INSERT INTO memberships(sport_category, current_plan, plan_start_date, plan_end_date, member_id) VALUES (?,?,?,?,?)", sprt_ctgry, memb_type, today, end_day, person_id)
-        # print(f"{f_name}, {l_name}, {hh_f_name}, {hh_l_name}, {temp_addr}, {permanent_addr}, {m_num}, {e_num}, {gender}, {dob}, {sprt_ctgry}, {marital_status}, {occupation}, {blood_grp}, {memb_type}")
-        return render_template("register.html")
+
+        #For member
+        if persons_class == 0 or persons_class == "0":
+            # Inserting data into the members table for registration
+            db.execute("INSERT INTO members(member_id, admission_date, household_head_first_name, household_head_last_name) VALUES (?, ?, ?, ?)", person_id, today, hh_f_name, hh_l_name)
+            # Inserting data into memberships
+            db.execute("INSERT INTO memberships(sport_category, current_plan, plan_start_date, plan_end_date, member_id) VALUES (?,?,?,?,?)", sprt_ctgry, memb_type, today, end_day, person_id)
+            # print(f"{f_name}, {l_name}, {hh_f_name}, {hh_l_name}, {temp_addr}, {permanent_addr}, {m_num}, {e_num}, {gender}, {dob}, {sprt_ctgry}, {marital_status}, {occupation}, {blood_grp}, {memb_type}")
+            return render_template("transactions.html", heading=f"Successfully registered new member : {f_name} {l_name} with ID :  <b style='font-size: 130%;'>{person_id}</b>!", )
+        
+        # For staff
+        else:
+             db.execute("INSERT INTO staff(joined_date, post, salary) VALUES (date('now'), ?, ?);", post, salary)
+             return render_template("register.html", heading=f"Successfully registered new staff : {f_name} {l_name} with ID : {person_id}!")
 
 @app.route("/fetch_data")
 def fetch_data():

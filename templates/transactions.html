@@ -2,11 +2,11 @@
 {% block body %}
         <form action="/transaction_review" method="post">
         <div class="mb-3">
-            <h2>Transactions </h2>
+            <h2>Transaction Details</h2>
         </div>
         <div class="mb-3">
             <label for="cashFlowDirection" class="form-label"> Transaction Direction: </label>
-            <select id="cashFlowDirection" name = "cash_flow_direction">
+            <select id="cashFlowDirection" name = "cash_flow_direction" class="form-select">
                 <option value=1>Income</option>
                 <option value=0>Expense</option>
             </select>
@@ -14,50 +14,52 @@
 
         <div class="mb-3">
             <label for="amount" class="form-label">Transaction Amount (Rs): </label>
-            <input type="number" class="form-control" id="amount" name = "transaction_amount" required>
+            <input type="number" class="form-control" id="amount" name = "transaction_amount" value="{{loading_amount}}"required>
         </div>
 
         <div class="mb-3">
             <label for="transactionCategory" class="form-label"> Transaction Category: </label>
-            <select id="transactionCategory" name = "transaction_category">
+            <select id="transactionCategory" name = "transaction_category" class="form-select">
                 {% for trans_cat in transaction_categories %}
                     <option value='{{trans_cat["id"]}}' class='category{{trans_cat["direction"]}}'>{{trans_cat["name"]}}</option>
                 {% endfor %}
             </select>
-            <button type="button" id="transactionCategoryKey">Add a new transaction category</button>
         </div>
-        <div class="mb-3" id="newTransactionCategoryDiv" style="display:none;">
+        <div class="mb-3">
+            <button type="button" id="transactionCategoryKey" class="btn btn-primary mb-3 d-flex align-items-center gap-5 black-button">Add a new transaction category</button>
+        </div>
+        <div class="mb-3" id="newTransactionCategoryDiv" style="display:none; border: solid #333 2px; border-radius: 3px; padding: 1%;">
             <label for="newTransactionCategory" class="form-label">New Transaction Category: </label>
             <input type="text" class="form-control" id="newTransactionCategory" name = "new_transaction_category" placeholder="Add a new transaction category...">
 
             <div class="mb-3">
-            <label for="newCashFlowDirection" class="form-label"> Cashflow Direction: </label>
-                <select id="newCashFlowDirection" name = "new_cash_flow_direction">
+            <label for="newCashFlowDirection"> Cashflow Direction: </label>
+                <select id="newCashFlowDirection" name = "new_cash_flow_direction" class="form-select">
                     <option value=1>Income</option>
                     <option value=0>Expense</option>
                 </select>
             </div>
 
-            <button id="newTransactionCategoryAdder" type="button">Add</button>
+            <button id="newTransactionCategoryAdder" type="button" class="btn btn-primary mb-3 d-flex align-items-center gap-5 black-button">Add</button>
         </div>
 
         <div class="mb-3">
             <label for="secondParty" class="form-label"> Transaction Other Party: </label>
-            <select id="secondParty" name = "second_party">
-                <option value=0>Member</option>
-                <option value=1>Staff</option>
-                <option value=2>External</option>
+            <select id="secondParty" name = "second_party" class="form-select">
+                <option value=0 {% if default_party == 0 %} selected {% endif %}>Member</option>
+                <option value=1 {% if default_party == 1 %} selected {% endif %}>Staff</option>
+                <option value=2 {% if default_party == 2 %} selected {% endif %}>External</option>
             </select>
         </div>
 
         <div class="mb-3" id="personIdDiv">
-            <label for="person_id" class="form-label">Other Person ID: </label>
-            <input type="number" class="form-control" id="personId" name = "person_id">
+            <label for="person_id" class="form-label">Transacting Person ID: </label>
+            <input type="number" class="form-control" id="personId" name = "person_id" value="{{default_person_id}}">
         </div>
 
         <div class="mb-3">
             <label for="remarks" class="form-label">Remarks: </label>
-            <textarea class="form-control" id="remarks" name = "transaction_remarks" placeholder="Remarks" required></textarea>
+            <textarea class="form-control" id="remarks" name = "transaction_remarks" placeholder="Remarks" required value="{{default_remarks}}"></textarea>
         </div>
         <button type="submit" class="btn btn-primary mb-3 d-flex align-items-center gap-5">CONFIRM</button>
     </form> 
