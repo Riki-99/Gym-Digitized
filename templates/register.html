@@ -80,21 +80,22 @@
                 <input type="text" class="form-control" id="headlastname" name = "house_head_last_name">
             </div>
 
-            <div class="mb-3">
-                <label for="sportcategory" class="form-label">Sport Category : </label>
-                <input type="text" class="form-control" id="sportcategory" name = "sport_category" required>
-             </div>   
-
+            
             <div class="mb-3">
                 <label for="occupation" class="form-label"> Occupation : </label>
                 <input type="text" class="form-control" id="occupation" name = "occupation">
             </div>
-
+            
             <div class="mb-3">
                 <label for="weight" class="form-label">Weight (in Kgs) : </label>
                 <input type="text" class="form-control" id="weight" name = "weight">
             </div>
 
+            <div class="mb-3">
+                <label for="sportcategory" class="form-label">Sport Category : </label>
+                <input type="text" class="form-control" id="sportcategory" name = "sport_category" required>
+             </div>   
+            
             <div class="mb-3">
                 <label for="membershiptype" class="form-label"> Membership Type : </label>
                 <select class="form-select" id="membershiptype" name="membership_type">
@@ -105,7 +106,15 @@
                     <option value="Couples">Couples Membership</option>
                     <option value="Trainer">Membership with Personal Trainer</option>
                     <option value="Others">Others</option>
-            </select>
+                </select>
+            </div>      
+            
+            <div class="mb-3" id="plan_start_end_setter">
+                <label for="plan_start_date">Plan Start Date: </label>
+                <input type="date" name="plan_start_date" id="start_date">
+                <br><br>
+                <label for="end_date">Plan End Date: </label>
+                <input type="date" name="plan_end_date" id="end_date">
             </div>
         </div>
 
@@ -131,17 +140,23 @@
                     <option value="O+">O+</option>
                     <option value="O-">O-</option>
                 </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="picture" class="form-label">Photo: </label>
-            <input type="file" name="picture" id="picture">
-        </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="picture" class="form-label">Photo: </label>
+                <input type="file" name="picture" id="picture">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
         
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+        <script>
+            
+            start = document.querySelector("#start_date")
+            end = document.querySelector("#end_date")
+            plan_setter = document.querySelector("#plan_start_end_setter");
+            plan_setter.style.display="none"
 
-    <script>
         document.querySelector("#regSel").addEventListener("change", () =>{
             change();
         })
@@ -159,6 +174,7 @@
                 member.style.display = "block";
                 sc.setAttribute("required","true");
                 mt.setAttribute("required","true");
+                dateSetter();
             }
 
             else{
@@ -166,8 +182,30 @@
                 staff.style.display = "block";  
                 sc.removeAttribute("required");
                 mt.removeAttribute("required");
+                start.removeAttribute("required");
+                end.removeAttribute("required");
             }
+            
         }
         change();
+
+        console.log(plan_setter)
+        document.querySelector("#membershiptype").addEventListener("change", dateSetter);
+        function dateSetter(){
+            selectedVal = document.querySelector("#membershiptype").value;
+            if(selectedVal != "Monthly" && selectedVal != "Quarterly" && selectedVal != "Half" && selectedVal !="Yearly")
+            {
+                plan_setter.style.display="block";
+                start.setAttribute("required", "true")
+                end.setAttribute("required", "true")
+            }
+            else{
+                start.value="";
+                end.value="";
+                plan_setter.style.display="none"
+                start.removeAttribute("required");
+                end.removeAttribute("required");
+            }
+        }
     </script>
 {% endblock %}

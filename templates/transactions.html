@@ -150,7 +150,9 @@
 
         // For stuff regarding the other party
         otherParty = document.querySelector("#secondParty");
-        otherParty.addEventListener("change", () =>{
+        otherParty.addEventListener("change", dealWithPersonId)
+
+        function dealWithPersonId(){
             // If not external, we need a new field to manually enter the person id
             personIdDiv = document.querySelector("#personIdDiv");
             if(otherParty.value != 2)
@@ -160,6 +162,7 @@
             else{
                  personIdDiv.style.display = "none";
             }
-        })
+        }
+        document.body.addEventListener("load", dealWithPersonId);
     </script>
 {% endblock %}

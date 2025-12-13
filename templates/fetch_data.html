@@ -2,11 +2,11 @@
 {% block body %}
     <!-- {{details}} -->
     <div class="container center">
-        <img src='static/uploads/{{details["photo"]}}' class="profile_photo"/>
         <br>
+        <img src='static/uploads/{{details["photo"]}}' class="profile_photo"/>
     </div>
     <div class="center separate">
-        {{details["first_name"]}} {{details["last_name"]}}
+        <h1>{{details["first_name"]}} {{details["last_name"]}}</h1>
     </div>
     <h1>Personal Data</h1>
     <table class="table table-striped">
@@ -19,7 +19,7 @@
             <tbody class="table-light">    
                     <tr> 
                         <td>Person ID</td>
-                        <td>{{details["person_id"]}}</td>
+                        <td data-id="{{details['person_id']}}" id="fetched_person_id">{{details["person_id"]}}</td>
                     </tr>
                     <tr> 
                         <td>First Name</td>
@@ -58,7 +58,130 @@
                         <td>Blood Group</td>
                         <td>{{details["blood_group"]}}</td>
                     </tr>
+                    <tr>
+                        <td>Membership Status</td>
+                        <td>{% if plan_ongoing %} Active {% else %} Inactive {% endif %}</td>
+                    </tr>
             </tbody>    
     </table>
+
+
+    {% if plan_ongoing %}
+        <h1>Membership History</h1>
+        <div>
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <th>Membership id</th>
+                    <th>Sport Category</th>
+                    <th>Current Plan</th>
+                    <th>Plan Start Date</th>
+                    <th>Plan End Date</th>
+                </thead>
+                <tbody class="table-light" id="membership_list_table">
+                    {% for plan in ongoing_plans %}
+                    <tr>
+                        <td>{{plan.membership_id}}</td>
+                        <td>{{plan.sport_category}}</td>
+                        <td>{{plan.current_plan}}</td>
+                        <td>{{plan.plan_start_date}}</td>
+                        <td>{{plan.plan_end_date}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    <button id="membership_renewer" class="black-button btn btn-primary mb-3 d-flex align-items-center gap-3">Add new membership</button>
+    <button id="membership_collapser" style="display: none !important" class="black-button btn btn-primary mb-3 d-flex align-items-center gap-3">Collapse</button>
+
+    <!-- A new div that will be visible when the membership_renewer buttonw will be pressed -->
+    <div id="membership_renew_area" class="mb-3" style="border: solid black 0.15em; border-radius: 1%; padding: 2%; display: none;">
+                <h2>Add new Membership</h2>
+
+                 <div class="mb-3">
+                    <label for="sportcategory" class="form-label">Sport Category : </label>
+                    <input type="text" class="form-control" id="sportcategory" name = "sport_category" required>
+                </div>  
+                <label for="membershiptype" class="form-label"> Membership Type : </label>
+                <select class="form-select" id="membershiptype" name="membership_type">
+                    <option value="Monthly">Monthly Membership</option>
+                    <option value="Quarterly">Quarterly Membership</option>
+                    <option value="Half">Half Membership</option>
+                    <option value="Yearly">Yearly Membership</option>
+                    <option value="Couples">Couples Membership</option>
+                    <option value="Trainer">Membership with Personal Trainer</option>
+                    <option value="Others">Others</option>
+                </select>
+                <br>
+                <div class="mb-3" id="plan_start_end_setter">
+                <label for="plan_start_date">Plan Start Date: </label>
+                <input type="date" name="plan_start_date" id="start_date">
+                <br><br>
+                <label for="end_date">Plan End Date: </label>
+                <input type="date" name="plan_end_date" id="end_date">
+            </div>
+                <br>
+        <button id="confirm_renewal" class="black-button btn btn-primary mb-3 d-flex align-items-center gap-3">Confirm Renewal</button>
+    </div>
+
+<script>
+    collapser = document.querySelector("#membership_collapser");
+    renew_area = document.querySelector("#membership_renew_area");
+    document.querySelector("#membership_renewer").addEventListener("click", () => {
+        collapser.style.display = "block";
+        renew_area.style.display = "block";
+    })
+
+    collapser.addEventListener("click", () => {
+        collapser.style.setProperty('display', 'none', 'important')
+        renew_area.style.display = "none";
+    })
+
+    document.querySelector("#confirm_renewal").addEventListener('click', async () =>{
+        p_id = document.querySelector("#fetched_person_id").dataset.id;
+        category = document.querySelector("#sportcategory").value;
+        startDate = document.querySelector("#start_date").value
+        endDate = document.querySelector("#end_date").value
+        plan = document.querySelector("#membershiptype").value;
+
+        data = await fetch("/renew_membership", {
+            "method" : "POST",
+            "headers" : {"Content-Type" : "application/json"},
+            "body": JSON.stringify({id: p_id, sportCategory: category, currentPlan : plan, start: startDate, end: endDate})
+        })
+
+        response = await data.json()
+        console.log(response)
+        // Updating the table
+
+        tbody = document.querySelector("#membership_list_table");
+        tr = document.createElement("tr");
+
+        td = document.createElement("td");
+        td.innerText = response.id;
+        tr.appendChild(td);
+
+        td1 = document.createElement("td");
+        td1.innerText = response.sport_category;
+        tr.appendChild(td1);
+
+        td2 = document.createElement("td");
+        td2.innerText = response.current_plan;
+        tr.appendChild(td2);
+
+        td3 = document.createElement("td");
+        td3.innerText = response.start_date;
+        tr.appendChild(td3);
+
+        td4 = document.createElement("td");
+        td4.innerText = response.end_date;
+        tr.appendChild(td4);
+
+        tbody.appendChild(tr);
+        document.querySelector("#heading").innerText = `New membership successfully added for ${response.current_plan} ${response.sport_category} plan from ${response.start_date} to ${response.end_date}`
+        // Scroll to top 
+        window.scrollTo(0, 0);
+    });
+</script>
 
 {% endblock %}

@@ -16,22 +16,22 @@
                 </tr>
 
                 <tr>
-                    <th data-val="{{direction}}">Transaction Category</th>
+                    <th data-val="{{category}}">Transaction Category</th>
                     <td>{{category_description}}</td>
                 </tr>
 
                 <tr>
-                    <th data-val="{{direction}}">Transaction Other Party</th>
+                    <th data-val="{{second_party}}">Transaction Other Party</th>
                     <td>{% if second_party == 0 %} Member {% elif second_party == 1 %} Staff {% else %} External {% endif %}</td>
                 </tr>
 
                 <tr>
                     <th data-val="{{person_id}}">Person Id</th>
-                    <td>{{person_id}}</td>
+                    <td>{% if person_id != 0 %} person_id {% else %} Irrelevant {% endif %} </td>
                 </tr>
 
                 <tr>
-                    <th data-val="{{direction}}">Remarks</th>
+                    <th data-val="{{remarks}}">Remarks</th>
                     <td>{{remarks}}</td>
                 </tr>
             </tbody>    
@@ -63,7 +63,7 @@
                 {
                     direction: paragraphs[0].dataset.val, 
                     amount:parseInt(paragraphs[1].dataset.val), 
-                    category:parseInt(paragraphs[2].dataset.val),
+                    transaction_category:parseInt(paragraphs[2].dataset.val),
                     second_party:parseInt(paragraphs[3].dataset.val),
                     person_id: parseInt(paragraphs[4].dataset.val),
                     remarks: paragraphs[5].dataset.val

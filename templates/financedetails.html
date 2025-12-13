@@ -1,0 +1,128 @@
+{% extends "template.html" %}
+{% block body %}
+
+<div class="mb-3">
+    <label for="startDate">Start Clipping From: </label>
+    <input type="date" name="start_date" id="startDate" class="form-select" value="{{date30daysago}}"/>
+</div>
+
+<div class="mb-3">
+    <label for="startDate">Stop Clipping At: (Note: non-inclusive)</label>
+    <input type="date" name="end_date" id="endDate" class="form-select" value="{{datetoday}}"/>
+</div>
+
+<div class="mb-3">
+    <button id="financeLoader" class="black-button btn btn-primary mb-3 d-flex align-items-center gap-3">Load Financial Details</button>
+</div>
+    <table class="table table-striped">
+            <thead class="table-dark" id="att_detail_thead">
+            </thead>
+            <tbody  id="att_detail_tbody">     
+            </tbody>    
+    </table>
+
+
+    <script>
+        async function loadFinance(){
+            startdate = document.querySelector("#startDate").value;
+            enddate = document.querySelector("#endDate").value;
+
+            request = await fetch("/get_financial_details", {
+                method : "POST",
+                headers : {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    start_date : startdate,
+                    end_date : enddate
+                })
+            })
+
+            response = await request.json();
+            
+            active_members = response.active_members;
+            days_array = response.days_array;
+            time_diff = response.time_diff;
+
+            console.log(response);
+            createTable(active_members, days_array, time_diff)
+        }
+
+        function createTable(active_members, days_array, time_diff){
+            // For header
+            let thead = document.querySelector("#att_detail_thead")
+            let tbody = document.querySelector("#att_detail_tbody")
+            let tr = document.createElement("tr");
+
+            // First we add the headers, the first header should be like "Members" and then the dates
+            // and hence length + 1
+            for(let i = 0; i< days_array.length + 1 ; i++)
+            {
+                let th = document.createElement("th");
+                if(i == 0){
+                    th.innerText = "Members"
+                }
+                else{
+                    th.innerText = days_array[i-1]
+                }
+                tr.appendChild(th);
+            }
+            thead.appendChild(tr);
+
+            // Now for the body
+            for(let i = 0; i < active_members.length; i++)
+            {
+                // i to index this because it's associated with a member
+                let present_days_array = active_members[i].present_days
+
+                tr = document.createElement("tr");
+                for(let j = 0; j < days_array.length + 1; j++)
+                {
+                    let td = document.createElement("td");
+                    if(j == 0)
+                    {
+                        //First cell should contain the member's name
+                        td.innerText = active_members[i].first_name;
+                    }
+                    else{
+                        // j to index this because it needs to be indexed multiple times per member
+                        let today = days_array[j-1]
+                        let present = false;
+                        
+                        console.log("Member id : " + active_members[i].member_id)
+                        console.log(present_days_array)
+                        console.log(today)
+
+                        for(let k = 0; k < present_days_array.length; k++)
+                        {
+                            if(present_days_array[k].todays_date == today)
+                            {
+                               
+                              present = true;
+                              break; 
+                            }
+                        }
+
+                        if(present)
+                        {
+                            // Present
+                            // console.log(present_days_array)
+                            // console.log(today)
+                            td.innerText = "P";
+                            td.style.backgroundColor = "#1f6"
+                        }
+                        else{
+                            td.innerText = "A";
+                            td.style.backgroundColor = "#f16"
+                        }
+                    }
+                    td.style.textAlign = "center";  
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            }
+        }
+        document.querySelector("#financeLoader").addEventListener("click", loadFinance)
+    </script>
+
+{% endblock %}
