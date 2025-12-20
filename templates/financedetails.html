@@ -1,6 +1,10 @@
 {% extends "template.html" %}
 {% block body %}
-
+<style>
+    .financial-details{
+        display: none;   
+    }
+</style>
 <div class="mb-3">
     <label for="startDate">Start Clipping From: </label>
     <input type="date" name="start_date" id="startDate" class="form-select" value="{{date30daysago}}"/>
@@ -14,15 +18,23 @@
 <div class="mb-3">
     <button id="financeLoader" class="black-button btn btn-primary mb-3 d-flex align-items-center gap-3">Load Financial Details</button>
 </div>
-    <table class="table table-striped">
-            <thead class="table-dark" id="att_detail_thead">
-            </thead>
-            <tbody  id="att_detail_tbody">     
-            </tbody>    
+
+<div class="financial-details">
+    <h1 class="income-detail finance-header">Income</h1>
+        <table class="table table-striped">
+            <thead class="table-dark" id="income_detail_thead"></thead>
+            <tbody class="table-light"  id="income_detail_tbody"></tbody>    
     </table>
 
+<h1 class="income-detail finance-header">Expense</h1>
+<table class="table table-striped">
+        <thead class="table-dark" id="expense_detail_thead"></thead>
+        <tbody class="table-light"  id="expense_detail_tbody"></tbody>    
+</table>
+</div>
 
     <script>
+        sheet_div = document.querySelector(".financial-details");
         async function loadFinance(){
             startdate = document.querySelector("#startDate").value;
             enddate = document.querySelector("#endDate").value;
@@ -40,87 +52,121 @@
 
             response = await request.json();
             
-            active_members = response.active_members;
+            income_records = response.income_records;
+            expense_records = response.expense_records;
             days_array = response.days_array;
             time_diff = response.time_diff;
 
             console.log(response);
-            createTable(active_members, days_array, time_diff)
+            sheet_div.style.display = "block";
+            createTable(income_records, expense_records)
         }
 
-        function createTable(active_members, days_array, time_diff){
-            // For header
-            let thead = document.querySelector("#att_detail_thead")
-            let tbody = document.querySelector("#att_detail_tbody")
+        function createTable(income_records, expense_records){
+            // For income
+            let ithead = document.querySelector("#income_detail_thead")
+            let itbody = document.querySelector("#income_detail_tbody")
+            let total_income = 0;
+            let total_expense = 0;
+
+            // For expense
+            let ethead = document.querySelector("#expense_detail_thead")
+            let etbody = document.querySelector("#expense_detail_tbody")
             let tr = document.createElement("tr");
 
-            // First we add the headers, the first header should be like "Members" and then the dates
-            // and hence length + 1
-            for(let i = 0; i< days_array.length + 1 ; i++)
+            ithead.innerHTML = "";
+            itbody.innerHTML = ""
+            ethead.innerHTML = "";
+            etbody.innerHTML = ""
+
+            th = document.createElement("th");
+            th.innerText = "Transaction ID"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText = "Amount"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText = "Purpose"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText = "Date time"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText = "Second Party Type"
+            tr.appendChild(th);
+
+            th = document.createElement("th");
+            th.innerText = "Second Party Name"
+            tr.appendChild(th)
+
+            th = document.createElement("th");
+            th.innerText = "Remarks"
+            tr.appendChild(th)
+
+            console.log(tr)
+            console.log(ithead)
+            ethead.appendChild(tr);
+            ithead.appendChild(tr.cloneNode(true));
+
+            for(let i = 0; i < income_records.length; i++)
             {
-                let th = document.createElement("th");
-                if(i == 0){
-                    th.innerText = "Members"
-                }
-                else{
-                    th.innerText = days_array[i-1]
-                }
-                tr.appendChild(th);
+                obj = addIndividualRecords(income_records[i])
+                itbody.appendChild(obj.row)
+                total_income += obj.amount;
             }
-            thead.appendChild(tr);
-
-            // Now for the body
-            for(let i = 0; i < active_members.length; i++)
+            tr = document.createElement("tr");
+            tr.innerHTML=`<td> Total Income: </td> <td><b>Rs. ${total_income}</b></td>`
+            itbody.appendChild(tr)
+            for(let i = 0; i < expense_records.length; i++)
             {
-                // i to index this because it's associated with a member
-                let present_days_array = active_members[i].present_days
 
-                tr = document.createElement("tr");
-                for(let j = 0; j < days_array.length + 1; j++)
-                {
-                    let td = document.createElement("td");
-                    if(j == 0)
-                    {
-                        //First cell should contain the member's name
-                        td.innerText = active_members[i].first_name;
-                    }
-                    else{
-                        // j to index this because it needs to be indexed multiple times per member
-                        let today = days_array[j-1]
-                        let present = false;
-                        
-                        console.log("Member id : " + active_members[i].member_id)
-                        console.log(present_days_array)
-                        console.log(today)
-
-                        for(let k = 0; k < present_days_array.length; k++)
-                        {
-                            if(present_days_array[k].todays_date == today)
-                            {
-                               
-                              present = true;
-                              break; 
-                            }
-                        }
-
-                        if(present)
-                        {
-                            // Present
-                            // console.log(present_days_array)
-                            // console.log(today)
-                            td.innerText = "P";
-                            td.style.backgroundColor = "#1f6"
-                        }
-                        else{
-                            td.innerText = "A";
-                            td.style.backgroundColor = "#f16"
-                        }
-                    }
-                    td.style.textAlign = "center";  
-                    tr.appendChild(td);
-                }
-                tbody.appendChild(tr);
+                obj = addIndividualRecords(expense_records[i])
+                etbody.appendChild(obj.row)
+                total_expense += obj.amount;
             }
+            tr = document.createElement("tr");
+            tr.innerHTML=`<td> Total Expense: </td> <td>Rs. ${total_expense}</td>`
+            etbody.appendChild(tr)
+            etbody.innerHTML += `<tr><td> Net Cashflow </td> <td><b> Rs. ${total_income - total_expense}</b></td></tr>`
+        }
+
+        function addIndividualRecords(list)
+        {
+            let td = document.createElement("td");
+            let tr = document.createElement('tr');
+            
+            td.innerText = list.transaction_id;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText = list.amount;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText = list.name;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText = list.transaction_datetime;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText = list.type;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText = `${list.first_name} ${list.last_name}`;
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.innerText = list.remarks
+            tr.appendChild(td);
+
+            return {row : tr, amount: list.amount};
         }
         document.querySelector("#financeLoader").addEventListener("click", loadFinance)
     </script>

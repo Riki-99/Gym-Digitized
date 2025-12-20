@@ -3,7 +3,7 @@ from helpers import *
 
 @app.route("/")
 def default():
-    return render_template("index.html", current_page='home')
+    return render_template("viewmemberdata.html", current_page='member_data')
 
 @app.route("/member_data", methods=("GET", "POST"))
 def memberData():
@@ -52,7 +52,7 @@ def get_attendance_details():
     #Using MM-DD format for days, time_diff + 1 because we want to be inclusive of the end date specified
     for i in range(0, time_diff + 1):
         days_array.append(date_after_certain_days(date.fromisoformat(start), i).strftime("%m-%d"))
-    active_members = db.execute("SELECT memberships.member_id, persons.first_name, persons.last_name FROM memberships FULL JOIN persons ON memberships.member_id = persons.person_id WHERE (memberships.plan_start_date <= ? AND memberships.plan_end_date >= ?) OR (memberships.plan_start_date <= ? AND memberships.plan_end_date >= ?)", end, end, start, start)
+    active_members = db.execute("SELECT memberships.member_id, persons.first_name, persons.last_name FROM memberships FULL JOIN persons ON memberships.member_id = persons.person_id WHERE (memberships.plan_start_date <= ? AND memberships.plan_end_date >= ?) OR (memberships.plan_start_date <= ? AND memberships.plan_end_date >= ?) ORDER BY persons.first_name, persons.last_name", end, end, start, start)
     for members in active_members:
         #Getting the days in an array when a particular member was present and adding it as a key in the members dictionary 
         present_days = db.execute("SELECT todays_date FROM attendance WHERE person_id = ? AND todays_date >= ? AND todays_date <= ?", members["member_id"], start, end)
@@ -110,6 +110,19 @@ def view_memb_data():
     else:
         records = returnRecordsUsingNames()
         return render_template("viewmemberdata.html", current_page="view_member_data", recordqueries=True, records=records)
+    
+@app.route("/view_staff_data")
+def view_staff_data():
+        id_in_url = request.args.get('staff_id')
+        print(id_in_url, " is the id in url")
+        details = db.execute("SELECT * FROM persons JOIN staff ON persons.person_id = staff.staff_id WHERE person_id = ?",id_in_url)[0]
+        return render_template("staffdetails.html", current_page="view_member_data", details=details)
+    
+@app.route("/view_staff_list")
+def view_staff_list():
+        records = db.execute("SELECT * FROM persons JOIN staff ON persons.person_id = staff.staff_id")
+        return render_template("viewstafflist.html", current_page="view_member_data", records=records)
+
 @app.route("/data_analysis")
 def data_analysis():
     return render_template("dataanalysis.html", current_page="data_analysis")
@@ -166,7 +179,8 @@ def register():
 
         print(pict.filename)
         # Saving the picture locally
-        pict.save(f"./static/uploads/{pict.filename}")
+        pictname = f'{m_num}{pict.filename}{date.today().strftime("%Y-%m-%d")}'
+        pict.save(f"./static/uploads/{pictname}")
 
         #Preliminary check to avoid inspect tampering is required
 
@@ -187,7 +201,7 @@ def register():
             end_day = date_after_certain_days(date.today(), duration)
         
         # Inserting data into the persons table which generates a primary key
-        db.execute("INSERT INTO persons(first_name, last_name, photo, gender, dob, temporary_address, permanent_address, mobile_number, emergency_number, married, blood_group, occupation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", f_name, l_name, pict.filename, gender, dob, temp_addr, permanent_addr, m_num, e_num, marital_status, blood_grp, occupation)
+        db.execute("INSERT INTO persons(first_name, last_name, photo, gender, dob, temporary_address, permanent_address, mobile_number, emergency_number, married, blood_group, occupation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", f_name, l_name, pictname, gender, dob, temp_addr, permanent_addr, m_num, e_num, marital_status, blood_grp, occupation)
         # Obtaining the data of the given person
         person_ids = db.execute("SELECT person_id FROM persons WHERE first_name LIKE ? AND last_name LIKE ? AND dob LIKE ? AND mobile_number = ? LIMIT 1", f_name, l_name, dob, m_num)
         # Returns a list of dictionaries which needs to be indexed properly
@@ -204,18 +218,68 @@ def register():
         
         # For staff
         else:
-             db.execute("INSERT INTO staff(joined_date, post, salary) VALUES (date('now'), ?, ?);", post, salary)
+             db.execute("INSERT INTO staff(staff_id, joined_date, post, salary) VALUES (?, date('now'), ?, ?);",person_id, post, salary)
              return render_template("register.html", heading=f"Successfully registered new staff : {f_name} {l_name} with ID : {person_id}!")
 
 @app.route("/fetch_data")
 def fetch_data():
     id_in_url = request.args.get('member_id')
-    details = db.execute("SELECT * FROM persons WHERE persons.person_id = ?", id_in_url)[0]
+    details = db.execute("SELECT * FROM persons JOIN members ON persons.person_id = members.member_id WHERE persons.person_id = ?", id_in_url)[0]
     ongoing_plans = db.execute("SELECT * FROM memberships WHERE member_id = ?", id_in_url)
     plan_ongoing = False
     if(len(ongoing_plans) != 0):
         plan_ongoing = True
     return render_template("fetch_data.html", current_page="member_data", details=details, plan_ongoing=plan_ongoing, ongoing_plans=ongoing_plans)
+
+@app.route("/edit_data")
+def edit_data():
+    id_in_url = request.args.get('member_id')
+    details = db.execute("SELECT * FROM persons JOIN members ON persons.person_id = members.member_id WHERE persons.person_id = ?", id_in_url)[0]
+    return render_template("editmemberdata.html", current_page="member_data",details=details, id=id_in_url)
+
+@app.route("/edit_staff_data")
+def edit_staff_data():
+    id_in_url = request.args.get('staff_id')
+    details = db.execute("SELECT * FROM persons JOIN staff ON persons.person_id = staff.staff_id WHERE person_id = ?", id_in_url)[0]
+    return render_template("editstaffdata.html", current_page="member_data", details=details, id=id_in_url)
+
+@app.route("/update_member_details", methods=["POST"])
+def update_member_details():
+    id = request.form.get('id')
+    f_name = request.form.get('f_name')
+    l_name = request.form.get('l_name')
+    gender = request.form.get('gender')
+    dob = request.form.get('dob')
+    m_num = request.form.get('m_number')
+    e_num = request.form.get('e_number')
+    blood_group = request.form.get("blood_group")
+    married = request.form.get("married")
+    hh_fname = request.form.get("hh_fname")
+    hh_lname = request.form.get("hh_lname")
+
+    db.execute("UPDATE persons SET first_name=?, last_name=?, gender=?, dob=?, mobile_number=?, emergency_number=?, blood_group=?, married=? WHERE person_id=?", f_name, l_name, gender, dob, m_num, e_num, blood_group, married, id)
+    db.execute("UPDATE members SET household_head_first_name = ?, household_head_last_name = ?  WHERE member_id = ?", hh_fname, hh_lname, id)
+
+    return redirect(f"/fetch_data?member_id={id}")
+
+@app.route("/update_staff_details", methods=["POST"])
+def update_staff_details():
+    id = request.form.get('id')
+    f_name = request.form.get('f_name')
+    l_name = request.form.get('l_name')
+    gender = request.form.get('gender')
+    dob = request.form.get('dob')
+    m_num = request.form.get('m_number')
+    e_num = request.form.get('e_number')
+    blood_group = request.form.get("blood_group")
+    salary = request.form.get("salary")
+    married = request.form.get("married")
+
+    db.execute("UPDATE persons SET first_name=?, last_name=?, gender=?, dob=?, mobile_number=?, emergency_number=?, blood_group=?, married=? WHERE person_id=?", f_name, l_name, gender, dob, m_num, e_num, blood_group, married, id)
+    db.execute("UPDATE staff SET salary=? WHERE staff_id=?", salary, id)
+    return redirect(f"/view_staff_data?staff_id={id}")
+
+        
 
 # Membership renewals may overlap if renewed before expiry / without setting appropriate date
 @app.route("/renew_membership", methods=['POST'])
@@ -283,15 +347,19 @@ def confirm_transaction():
 
 @app.route("/finance_details", methods=["GET"])
 def finance_details():
-    datetoday = date.today().strftime("%Y-%m-%d")
-    date30daysago = (date.today() - timedelta(days=30)).strftime("%Y-%m-%d")
+    # Since it's exclusive of the end point, we put the end point at tomorrow and not today
+    datetoday = (date.today() + timedelta(days=1)).strftime("%Y-%m-%d")
+    date30daysago = (date.today() - timedelta(days=29)).strftime("%Y-%m-%d")
     return render_template("financedetails.html", current_page="finance_details", datetoday=datetoday, date30daysago=date30daysago)
 
 @app.route("/get_financial_details", methods=["POST"])
 def get_financial_details():
     data = request.get_json()
-    start = f'{data["start_date"]} 00:00:00'
-    end = f'{data["end_date"]} 00:00:00'
+    start = f'{data["start_date"]}  00:00:00'
+    # Python seems to be very strict about datetime format so this is a necessity
+    start = datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
+    end = f'{data["end_date"]}  00:00:00'
+    end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
     # details = db.execute("SELECT * FROM transactions WHERE ")
 
     #Time difference between start and end
@@ -300,9 +368,16 @@ def get_financial_details():
     days_array = []
     #Using MM-DD format for days, time_diff + 1 because we want to be inclusive of one day before the specified end date
     for i in range(0, time_diff + 1):
-        days_array.append(date_after_certain_days(date.fromisoformat(start), i).strftime("%m-%d"))
-    records = db.execute("SELECT * FROM transactions WHERE transaction_datetime >= ? and transaction_datetime <= ?", start, end)
-    return jsonify({"records": records, "time_diff": time_diff, "days_array": days_array})
+        days_array.append(date_after_certain_days(date.fromisoformat(data["start_date"]), i).strftime("%m-%d"))
+    records = db.execute("SELECT * FROM ((transactions JOIN transaction_type ON transactions.transaction_type_id = transaction_type.id) JOIN  transaction_second_party ON transaction_second_party.id =  transactions.second_party_id) JOIN persons ON persons.person_id = transactions.person_id WHERE transactions.transaction_datetime >= ? and transactions.transaction_datetime <= ?", start, end)
+    income_records = []
+    expense_records = []
+    for record in records:
+            if record["direction"] == 1:
+                income_records.append(record)
+            else :
+                expense_records.append(record)
+    return jsonify({"income_records": income_records, "expense_records" : expense_records, "time_diff": time_diff, "days_array": days_array})
 
 if __name__ == "__main__":
     app.run(debug=True)

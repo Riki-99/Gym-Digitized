@@ -13,15 +13,12 @@
      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search" />
     <link rel="stylesheet" href="/static/main.css">
 <ul class="nav nav-pills">
-  <li class="nav-item">
-    <a class="nav-link  {% if current_page == 'home' %} active {% endif %} " href="/">Active</a>
-  </li>
     <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Member Data</a>
+    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Person Data</a>
     <div class="dropdown-menu">
-      <a class="dropdown-item" href="/register">Register New Member</a>
+      <a class="dropdown-item" href="/register">Register New Person</a>
       <a class="dropdown-item" href="/view_member_data">View Member Data</a>
-      <a class="dropdown-item" href="/data_analysis">Data Analysis</a>
+      <a class="dropdown-item" href="/view_staff_list">View Staff Data</a>
   </li>
   <li class="nav-item">
     <a class="nav-link {% if current_page == 'transactions' %} active {% endif %}" href="/transactions">Transactions</a>
@@ -34,12 +31,33 @@
   </li>
 </ul>
 <!-- Heading to make it possible to add some text at the top of the document, mainly to confirm something -->
-<p id="heading" style="margin: 3%; margin-left: 0; background-color:#1f6; color: #fff;border: solid 1px #1f6; padding: 1%; border-radius: 3px; font-size: 120%;">{{heading | safe}}</p>
+<p id="heading" style="margin: 3%; margin-left: 0; color: #fff;border: solid 1px #1f6; padding: 1%; border-radius: 3px; font-size: 120%; display: none;">{{heading | safe}}</p>
+
+<script>
+  function displayHeader(text, color=0){
+    if(color == 0)
+    {
+      color = "#1f6";
+    }
+    else{
+      color = "#f16";
+    }
+    header = document.querySelector("#heading");
+    header.innerText = text;
+    header.style.backgroundColor = color;
+    header.style.display = "block";
+    window.setTimeout(() => {
+      header.style.display= "none";
+    }, 15000)
+  }
+  {% if heading %}
+    displayHeader(heading.innerText);
+  {% endif %}
+</script>
 {% block body %}
 {% endblock %}
 
 {% block footer %}
 {% endblock %}
-
 </body>
 </html>

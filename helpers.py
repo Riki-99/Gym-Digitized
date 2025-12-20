@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, jsonify
+from flask import Flask, render_template, request, session, jsonify, redirect
 from cs50 import SQL
 from datetime import date, timedelta, datetime
 
@@ -21,14 +21,14 @@ def returnRecordsUsingNames(f_name=None, l_name=None):
 
             # We display all records if both empty
             if(f_name is None and l_name is None):
-                 records = db.execute("SELECT * FROM persons ORDER BY first_name, last_name")
+                 records = db.execute("SELECT * FROM persons JOIN members ON persons.person_id = members.member_id ORDER BY first_name, last_name")
                  return
 
             records = list()
             if l_name:
-                records = db.execute("SELECT * FROM persons WHERE persons.first_name LIKE ? and persons.last_name LIKE ? ORDER BY persons.first_name, last_name", f"%{f_name}%", f"%{l_name}%")
+                records = db.execute("SELECT * FROM persons JOIN members ON persons.person_id = members.member_id WHERE persons.first_name LIKE ? and persons.last_name LIKE ? ORDER BY persons.first_name, last_name", f"%{f_name}%", f"%{l_name}%")
             else:
-                records = db.execute("SELECT * FROM persons WHERE persons.first_name LIKE ? ORDER BY persons.first_name", f"%{f_name}%")
+                records = db.execute("SELECT * FROM persons JOIN members ON persons.person_id = members.member_id WHERE persons.first_name LIKE ? ORDER BY persons.first_name", f"%{f_name}%")
             return records
 
       

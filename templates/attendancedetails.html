@@ -53,6 +53,9 @@
             let tbody = document.querySelector("#att_detail_tbody")
             let tr = document.createElement("tr");
 
+            thead.innerHTML = "";
+            tbody.innerHTML = "";
+
             // First we add the headers, the first header should be like "Members" and then the dates
             // and hence length + 1
             for(let i = 0; i< days_array.length + 1 ; i++)

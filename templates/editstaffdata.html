@@ -1,0 +1,12 @@
+{% extends "editdata.html" %}
+{% block updateAddress %}/update_staff_details{% endblock %}
+{% block updateSpecifics %}
+    <div class="mb-3">
+        <label for="salary">Salary</label>
+        <input type="text" class="form-control" id="salary" name="salary" value="{{details['salary']}}">
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary mb-3 d-flex align-items-center gap-5">CONFIRM</button>
+    </div>
+{% endblock %}

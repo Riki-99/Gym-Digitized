@@ -1,0 +1,16 @@
+{% extends "editdata.html" %}
+{% block updateAddress %}/update_member_details{% endblock %}
+{% block  updateSpecifics%}
+    <div class="mb-3">
+        <label for="hhfname">Household head first name</label>
+        <input type="text" name="hh_fname" id="hhfname" class="form-control" value="{{details['household_head_first_name']}}">
+    </div>
+
+     <div class="mb-3">
+        <label for="hhlame">Household head last name</label>
+        <input type="text" name="hh_lname" class="form-control" id="hhlname" value="{{details['household_head_last_name']}}">
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary mb-3 d-flex align-items-center gap-5">CONFIRM</button>
+    </div>
+{% endblock %}

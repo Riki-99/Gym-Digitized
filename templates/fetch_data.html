@@ -37,6 +37,12 @@
                         <td>DOB</td>
                         <td>{{details["dob"]}}</td>
                     </tr>
+
+                    <tr> 
+                        <td>Admission Date</td>
+                        <td>{{details["admission_date"]}}</td>
+                    </tr>
+
                      <tr> 
                         <td>Mobile Number</td>
                         <td>{{details["mobile_number"]}}</td>
@@ -45,6 +51,12 @@
                         <td>Emergency contact number</td>
                         <td>{{details["emergency_number"]}}</td>
                     </tr>
+                    
+                    <tr> 
+                        <td>Household Head Name</td>
+                        <td>{{details["household_head_first_name"]}} {{details["household_head_last_name"]}}</td>
+                    </tr>
+
                      <tr> 
                         <td>Marital Status</td>
                         <td>
@@ -64,6 +76,8 @@
                     </tr>
             </tbody>    
     </table>
+<br>
+    <div id="lbl"><button class="btn btn-primary mb-3 d-flex align-items-center gap-3"> <a href="/edit_data?member_id={{details["person_id"]}}" style="color: inherit; text-decoration: none;">Edit Details</a></button></div>
 
 
     {% if plan_ongoing %}

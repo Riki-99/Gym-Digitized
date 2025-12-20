@@ -1,0 +1,64 @@
+{% extends "template.html" %}
+{% block body %}
+<h1>Edit Details for {{details["first_name"]}} {{details["last_name"]}} with id: {{id}}</h1>
+    <form action="{% block updateAddress %}{%endblock%}" method="post">
+        <input name="id" value="{{id}}" style="display: none;"> 
+        <div class="mb-3">
+            <label for="fname">First Name</label>
+            <input type="text" class="form-control" id="fname" name="f_name" value="{{details['first_name']}}">
+        </div>
+
+        <div class="mb-3">
+            <label for="lname">Last Name</label>
+            <input type="text" class="form-control" id="lname" name="l_name" value="{{details['last_name']}}">
+        </div>
+
+        <div class="mb-3">
+            <label for="gender">Gender</label>
+            <select type="text" class="form-control" id="gender" name="gender">
+                <option value="M" {% if details['gender'] == 'M' %} selected {% endif %}>Male</option>
+                <option value="F" {% if details['gender'] == 'F' %} selected {% endif %}>Female</option>
+                <option value="O" {% if details['gender'] == 'O' %} selected {% endif %}>Others</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="dob">DOB</label>
+            <input type="date" class="form-control" id="dob" name="dob" value="{{details['dob']}}">
+        </div>
+
+        <div class="mb-3">
+            <label for="mnumber">Mobile Number</label>
+            <input type="number" class="form-control" id="mnumber" name="m_number" value="{{details['mobile_number']}}">
+        </div>
+
+        <div class="mb-3">
+            <label for="enumber">Emergency contact number</label>
+            <input type="number" class="form-control" id="enumber" name="e_number" value="{{details['emergency_number']}}">
+        </div>
+
+        <div class="mb-3">
+            <label for="married">Marital status</label>
+            <select class="form-control" id="married" name="married">
+                <option value="0" {% if details['married'] == 0 %} selected {% endif %}>Unmarried</option>
+                <option value="1" {% if details['married'] == 1 %} selected {% endif %}>Married</option>
+            </select>
+        </div>
+
+       <div class="mb-3">
+                <label for="bloodgroup" class="form-label"> Blood Group : </label>
+                <select class="form-select" id="bloodgroup" name="blood_group" value="{{details['blood_group']}}">
+                    <option value="A+" {% if details['blood_group'] == 'A+' %} selected {% endif %}>A+</option>
+                    <option value="A-" {% if details['blood_group'] == 'A-' %} selected {% endif %}>A-</option>
+                    <option value="AB+" {% if details['blood_group'] == 'AB+' %} selected {% endif %}>AB+</option>
+                    <option value="AB-" {% if details['blood_group'] == 'AB-' %} selected {% endif %}>AB-</option>
+                    <option value="B+" {% if details['blood_group'] == 'B+' %} selected {% endif %}>B+</option>
+                    <option value="B-" {% if details['blood_group'] == 'B-' %} selected {% endif %}>B-</option>
+                    <option value="O+" {% if details['blood_group'] == 'O+' %} selected {% endif %}>O+</option>
+                    <option value="O-" {% if details['blood_group'] == 'O-' %} selected {% endif %}>O-</option>
+                </select>
+            </div>
+            
+            {% block updateSpecifics %}{% endblock %}
+    </form>
+{% endblock %}

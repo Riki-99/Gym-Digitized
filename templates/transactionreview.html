@@ -44,14 +44,11 @@
     </table>
 </div>
 
-    <div id="feedbackDiv" style="display:none;">
-        <h1>Transaction feedback!</h1>
-    </div>
+
 
 <script>
-     div = document.querySelector("#feedbackDiv");
-     h1 = div.querySelector("h1");
-    document.querySelector("#confirm").addEventListener("click", async () =>{
+
+     document.querySelector("#confirm").addEventListener("click", async () =>{
         // Sending request to the backend in order to save the transaction details
         paragraphs = document.querySelectorAll("th[data-val]")
         data = await fetch("/confirm_transaction", {
@@ -72,15 +69,11 @@
         response = await data.json();
         msg = response.statusText;
         
-        h1.innerText = msg;
-        div.style.display = "block";
-        document.querySelector("#transactionDiv").style.display="none";
+        displayHeader(msg)
     })
 
     document.querySelector("#cancel").addEventListener("click", () =>{
-        h1.innerText = "Transaction Cancelled!"
-        div.style.display = "block";
-        document.querySelector("#transactionDiv").style.display="none";
+        displayHeader("Transaction Cancelled!", 1)
     })
 </script>
 {% endblock %}

@@ -1,0 +1,79 @@
+{% extends "template.html" %}
+{% block body %}
+    <!-- {{details}} -->
+    <div class="container center">
+        <br>
+        <img src='static/uploads/{{details["photo"]}}' class="profile_photo"/>
+    </div>
+    <div class="center separate">
+        <h1>{{details["first_name"]}} {{details["last_name"]}}</h1>
+    </div>
+    <h1>Personal Data</h1>
+    <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                </tr>
+            </thead>
+            <tbody class="table-light">    
+                    <tr> 
+                        <td>Person ID</td>
+                        <td data-id="{{details['person_id']}}" id="fetched_person_id">{{details["person_id"]}}</td>
+                    </tr>
+                    <tr> 
+                        <td>First Name</td>
+                        <td>{{details["first_name"]}}</td>
+                    </tr>
+                    <tr> 
+                        <td>Last Name</td>
+                        <td>{{details["last_name"]}}</td>
+                    </tr>
+                    <tr> 
+                        <td>Post</td>
+                        <td>{{details["post"]}}</td>
+                    </tr>
+                    <tr> 
+                        <td>Joined Date</td>
+                        <td>{{details["joined_date"]}}</td>
+                    </tr>
+                    <tr> 
+                        <td>Gender</td>
+                        <td>{{details["gender"]}}</td>
+                    </tr>
+                    <tr> 
+                        <td>DOB</td>
+                        <td>{{details["dob"]}}</td>
+                    </tr>
+                     <tr> 
+                        <td>Mobile Number</td>
+                        <td>{{details["mobile_number"]}}</td>
+                    </tr>
+                     <tr> 
+                        <td>Emergency contact number</td>
+                        <td>{{details["emergency_number"]}}</td>
+                    </tr>
+                     <tr> 
+                        <td>Marital Status</td>
+                        <td>
+                            {% if details["married"] %}
+                                Married
+                            {% else %}
+                                Unmarried
+                            {% endif %}
+                    </tr>
+                     <tr> 
+                        <td>Blood Group</td>
+                        <td>{{details["blood_group"]}}</td>
+                    </tr>
+
+                    <tr> 
+                        <td>Salary</td>
+                        <td>{{details["salary"]}}</td>
+                    </tr>
+                   
+            </tbody>    
+    </table>
+<br>
+    <div id="lbl"><button class="btn btn-primary mb-3 d-flex align-items-center gap-3"> <a href="/edit_staff_data?staff_id={{details['person_id']}}" style="color: inherit; text-decoration: none;">Edit Details</a></button></div>
+{% endblock %}
