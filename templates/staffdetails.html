@@ -37,6 +37,10 @@
                         <td>Joined Date</td>
                         <td>{{details["joined_date"]}}</td>
                     </tr>
+                    <tr>
+                        <td>Current Status</td>
+                        <td>{% if details["left_date"]%} Inactive since {{details["left_date"]}} {% else %} Active {% endif %}</td>
+                    </tr>
                     <tr> 
                         <td>Gender</td>
                         <td>{{details["gender"]}}</td>

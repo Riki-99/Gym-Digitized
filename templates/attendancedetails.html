@@ -84,7 +84,7 @@
                     if(j == 0)
                     {
                         //First cell should contain the member's name
-                        td.innerText = active_members[i].first_name;
+                        td.innerText = `${active_members[i].first_name} ${active_members[i].last_name} (${active_members[i].member_id})`;
                     }
                     else{
                         // j to index this because it needs to be indexed multiple times per member
