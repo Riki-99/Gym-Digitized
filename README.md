@@ -1,5 +1,5 @@
 # Gym Digitized
-#### Video Demo: <url>
+#### Video Demo: https://youtu.be/XXJIuMc6TSI
 
 ## Description:
 ### Overview
